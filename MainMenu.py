@@ -48,3 +48,16 @@ def Usermenu() :
             print("Wrong Choice......Enter Your Choice again")
             continue
    
+
+if __name__ == "__main__":
+    print("===== Welcome to Library Management System =====")
+    print("1. Admin Login")
+    print("2. User Login")
+    role = input("Enter your choice (1 for Admin, 2 for User): ")
+
+    if role == "1":
+        Adminmenu()
+    elif role == "2":
+        Usermenu()
+    else:
+        print("Invalid choice. Exiting...")
