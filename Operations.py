@@ -2,6 +2,7 @@ import Book
 import User
 import Admin
 import Tables
+import Bookutils
 import mysql.connector
 #----------------------------------------------------------------------------------------
 #Operations for Admin Menu
@@ -15,24 +16,31 @@ def BookManagement():
         print("3. Search Book Record")
         print("4. Delete Book Record")
         print("5. Update Book Record")
-        print("6. Return to Main Menu")
+        print("6. Search Books by Name or Author")
+        print("7. View Book Statistics")
+        print("8. Return to Main Menu")
         print("===============================================================")
-        choice=int(input("Enter Choice between 1 to 6-------> : "))
-        if choice==1:
+        choice = int(input("Enter Choice between 1 to 8-------> : "))
+        if choice == 1:
             Book.insertBook()
-        elif choice==2:
+        elif choice == 2:
             Book.displayBook()
-        elif choice==3:
+        elif choice == 3:
             Book.searchBook()
-        elif choice==4:
+        elif choice == 4:
             Book.deleteBook()
-        elif choice==5:
+        elif choice == 5:
             Book.updateBook()
-        elif choice==6:
+        elif choice == 6:
+            Bookutils.searchBookByNameOrAuthor()
+        elif choice == 7:
+            Bookutils.bookStatistics()
+        elif choice == 8:
             return
         else:
-            print("Wrong Choice......Enter Your Choice again")
-            x=input("Press Enter to continue")
+            print("Wrong Choice... Enter your choice again.")
+            input("Press Enter to continue")
+
 #----------------------------------------------------------------------------------------
 def UserManagement():
     while True:
