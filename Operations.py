@@ -156,5 +156,5 @@ def Feedback():
         print("Thank you for your valuable Feedback")
         return      
 #----------------------------------------------------------------------------------------
-mydb=mysql.connector.connect(host="localhost",user="root",passwd="200511",database="Library")
+mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao",database="Library")
 mycursor=mydb.cursor()

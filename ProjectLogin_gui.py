@@ -11,7 +11,7 @@ class LibraryLoginApp:
         self.root.geometry("400x300")
         
         # Kết nối database
-        self.mydb = mysql.connector.connect(host="localhost", user="root", passwd="200511", database="Library")
+        self.mydb = mysql.connector.connect(host="127.0.0.1", user="root", passwd="taolao", database="Library")
         self.mycursor = self.mydb.cursor()
 
         # Giao diện chính

@@ -4,7 +4,7 @@ import mysql.connector
 import Tables_gui as Tables
 class BookApp:
     def __init__(self):
-        self.mydb = mysql.connector.connect(host="localhost", user="root", passwd="200511", database="Library")
+        self.mydb = mysql.connector.connect(host="127.0.0.1", user="root", passwd="taolao", database="Library")
         self.mycursor = self.mydb.cursor()
 
     def displayBook(self):

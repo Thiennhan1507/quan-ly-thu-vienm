@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 # ⚙️ Cấu hình kết nối MySQL
 conn = mysql.connector.connect(
-    host='localhost',
+    host='127.0.0.1',
     user='root',
     password='taolao',
     database='library_db'

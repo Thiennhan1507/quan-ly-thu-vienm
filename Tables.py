@@ -1,6 +1,6 @@
 import mysql.connector
 
-mydb=mysql.connector.connect(host="localhost",user="root",passwd="200511")
+mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao")
 mycursor=mydb.cursor()
 mycursor.execute("CREATE DATABASE IF NOT EXISTS Library")
 mycursor.execute("USE Library")

@@ -13,7 +13,7 @@ class OperationsApp:
         self.root.geometry("400x400")
         self.menu_type = menu_type
         
-        self.mydb = mysql.connector.connect(host="localhost", user="root", passwd="200511", database="Library")
+        self.mydb = mysql.connector.connect(host="127.0.0.1", user="root", passwd="taolao", database="Library")
         self.mycursor = self.mydb.cursor()
 
         if menu_type == "Book Management":
