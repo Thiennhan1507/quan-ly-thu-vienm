@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import mysql.connector
-import Book_gui as Book  
-import User_gui as User   
-import Admin_gui as Admin  
+import Book_gui as Book
+import User_gui as User
+import Admin_gui as Admin
 import Tables_gui as Tables
 
 class OperationsApp:
@@ -12,9 +12,14 @@ class OperationsApp:
         self.root.title(f"The Book Worm - {menu_type}")
         self.root.geometry("400x400")
         self.menu_type = menu_type
-        
+
+        # Kết nối DB và khởi tạo các app thành viên
         self.mydb = mysql.connector.connect(host="127.0.0.1", user="root", passwd="taolao", database="Library")
         self.mycursor = self.mydb.cursor()
+
+        self.book_app = Book.BookApp()
+        self.user_app = User.UserApp()
+        self.admin_app = Admin.AdminApp()
 
         if menu_type == "Book Management":
             self.book_management()
@@ -31,37 +36,33 @@ class OperationsApp:
 
     def book_management(self):
         tk.Label(self.root, text="Book Record Management", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Add Book Record", command=Book.insertBook).pack(pady=10)
-        tk.Button(self.root, text="Display Book Records", command=Book.displayBook).pack(pady=10)
-        tk.Button(self.root, text="Search Book Record", command=Book.searchBook).pack(pady=10)
-        tk.Button(self.root, text="Delete Book Record", command=Book.deleteBook).pack(pady=10)
-        tk.Button(self.root, text="Update Book Record", command=Book.updateBook).pack(pady=10)
+        tk.Button(self.root, text="Add Book Record", command=self.book_app.insertBook).pack(pady=10)
+        tk.Button(self.root, text="Display Book Records", command=self.book_app.displayBook).pack(pady=10)
+        tk.Button(self.root, text="Search Book Record", command=self.book_app.searchBook).pack(pady=10)
+        tk.Button(self.root, text="Delete Book Record", command=self.book_app.deleteBook).pack(pady=10)
+        tk.Button(self.root, text="Update Book Record", command=self.book_app.updateBook).pack(pady=10)
         tk.Button(self.root, text="Return to Main Menu", command=self.root.destroy).pack(pady=10)
 
     def user_management(self):
         tk.Label(self.root, text="User Record Management", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Add User Record", command=User.insertUser).pack(pady=10)
-        tk.Button(self.root, text="Display User Records", command=User.displayUser).pack(pady=10)
-        tk.Button(self.root, text="Search User Record", command=User.searchUser).pack(pady=10)
-        tk.Button(self.root, text="Delete User Record", command=User.deleteUser).pack(pady=10)
-        tk.Button(self.root, text="Update User Record", command=User.updateUser).pack(pady=10)
+        tk.Button(self.root, text="Add User Record", command=self.user_app.insertUser).pack(pady=10)
+        tk.Button(self.root, text="Display User Records", command=self.user_app.displayUser).pack(pady=10)
+        tk.Button(self.root, text="Search User Record", command=self.user_app.searchUser).pack(pady=10)
+        tk.Button(self.root, text="Delete User Record", command=self.user_app.deleteUser).pack(pady=10)
+        tk.Button(self.root, text="Update User Record", command=self.user_app.updateUser).pack(pady=10)
         tk.Button(self.root, text="Return to Main Menu", command=self.root.destroy).pack(pady=10)
 
     def admin_management(self):
         tk.Label(self.root, text="Admin Record Management", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Add Admin Record", command=Admin.insertAdmin).pack(pady=10)
-        tk.Button(self.root, text="Display Admin Records", command=Admin.displayAdmin).pack(pady=10)
-        tk.Button(self.root, text="Search Admin Record", command=Admin.searchAdmin).pack(pady=10)
-        tk.Button(self.root, text="Delete Admin Record", command=Admin.deleteAdmin).pack(pady=10)
-        tk.Button(self.root, text="Update Admin Record", command=Admin.updateAdmin).pack(pady=10)
+        tk.Button(self.root, text="Add Admin Record", command=self.admin_app.insertAdmin).pack(pady=10)
+        tk.Button(self.root, text="Display Admin Records", command=self.admin_app.displayAdmin).pack(pady=10)
+        tk.Button(self.root, text="Search Admin Record", command=self.admin_app.searchAdmin).pack(pady=10)
+        tk.Button(self.root, text="Delete Admin Record", command=self.admin_app.deleteAdmin).pack(pady=10)
+        tk.Button(self.root, text="Update Admin Record", command=self.admin_app.updateAdmin).pack(pady=10)
         tk.Button(self.root, text="Return to Main Menu", command=self.root.destroy).pack(pady=10)
 
     def feedback_table(self):
         tk.Label(self.root, text="Feedback and Rating Table", font=("Arial", 16)).pack(pady=20)
-        
         tree = ttk.Treeview(self.root, columns=("Feedback", "Rating"), show="headings")
         tree.heading("Feedback", text="Feedback")
         tree.heading("Rating", text="Rating")
@@ -76,11 +77,10 @@ class OperationsApp:
 
     def book_centre(self):
         tk.Label(self.root, text="Book Centre", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="List of all Books", command=Book.BookList).pack(pady=10)
-        tk.Button(self.root, text="Issue Book", command=Book.IssueBook).pack(pady=10)
-        tk.Button(self.root, text="Display Issued Book Records", command=Book.ShowIssuedBook).pack(pady=10)
-        tk.Button(self.root, text="Return Issued Book", command=Book.returnBook).pack(pady=10)
+        tk.Button(self.root, text="List of all Books", command=self.book_app.BookList).pack(pady=10)
+        tk.Button(self.root, text="Issue Book", command=self.book_app.IssueBook).pack(pady=10)
+        tk.Button(self.root, text="Display Issued Book Records", command=self.book_app.ShowIssuedBook).pack(pady=10)
+        tk.Button(self.root, text="Return Issued Book", command=self.book_app.returnBook).pack(pady=10)
         tk.Button(self.root, text="Return to Main Menu", command=self.root.destroy).pack(pady=10)
 
     def feedback(self):
@@ -89,7 +89,6 @@ class OperationsApp:
         feedback_win.geometry("400x300")
 
         tk.Label(feedback_win, text="Feedback and Rating", font=("Arial", 14)).pack(pady=10)
-        
         tk.Label(feedback_win, text="Enter your Review:").pack()
         feedback_entry = tk.Text(feedback_win, height=5, width=30)
         feedback_entry.pack()
@@ -112,32 +111,27 @@ class OperationsApp:
 
         tk.Button(feedback_win, text="Submit", command=submit_feedback).pack(pady=10)
 
+
 def BookManagement():
-    root = tk.Tk()
-    app = OperationsApp(root, "Book Management")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "Book Management")
 
 def UserManagement():
-    root = tk.Tk()
-    app = OperationsApp(root, "User Management")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "User Management")
 
 def AdminManagement():
-    root = tk.Tk()
-    app = OperationsApp(root, "Admin Management")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "Admin Management")
 
 def FeedbackTable():
-    root = tk.Tk()
-    app = OperationsApp(root, "Feedback Table")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "Feedback Table")
 
 def BookCentre():
-    root = tk.Tk()
-    app = OperationsApp(root, "Book Centre")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "Book Centre")
 
 def Feedback():
-    root = tk.Tk()
-    app = OperationsApp(root, "Feedback")
-    root.mainloop()
+    win = tk.Toplevel()
+    OperationsApp(win, "Feedback")
