@@ -1,12 +1,25 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-import pymysql
 import Tables_gui as Tables
 from db_config import get_connection
+from datetime import datetime, timedelta
+
+conn = get_connection()
+cursor = conn.cursor()
+
 class BookApp:
-    def __init__(self):
+    def __init__(self, root):
         self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
+
+        # Tạo giao diện chính để đặt các nút mượn và trả sách
+        frame = tk.Frame(root)
+        frame.pack(pady=20)
+        
+        # Nút mượn sách → mở form mượn sách
+        tk.Button(frame, text="Mượn sách", command=self.borrow_book_gui).pack(pady=5)
+        tk.Button(frame, text="Trả sách", command=self.return_book_gui).pack(pady=5)
+
 
     def displayBook(self):
         win = tk.Toplevel()
@@ -174,3 +187,83 @@ class BookApp:
                 messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ thông tin.")
 
         tk.Button(win, text="Cập nhật", command=update_book).pack(pady=10)
+
+def borrow_book_gui(self):
+    win = tk.Toplevel()
+    win.title("Mượn sách")
+    win.geometry("300x250")
+
+    tk.Label(win, text="Mã người dùng:").pack()
+    user_entry = tk.Entry(win)
+    user_entry.pack()
+
+    tk.Label(win, text="Mã sách:").pack()
+    book_entry = tk.Entry(win)
+    book_entry.pack()
+
+    def borrow():
+        user_id = user_entry.get().strip()
+        book_id = book_entry.get().strip()
+
+        cursor.execute("SELECT BookName, quantity FROM BookRecord WHERE BookID = %s", (book_id,))
+        result = cursor.fetchone()
+        if not result:
+            messagebox.showerror("Lỗi", "Sách không tồn tại.")
+            return
+        book_name, quantity = result
+        if quantity <= 0:
+            messagebox.showwarning("Hết sách", "Sách đã hết.")
+            return
+
+        borrow_date = datetime.today().date()
+        due_date = borrow_date + timedelta(days=7)
+
+        cursor.execute("""
+            INSERT INTO transactions (user_id, book_id, borrow_date, due_date, status)
+            VALUES (%s, %s, %s, %s, 'borrowed')
+        """, (user_id, book_id, borrow_date, due_date))
+
+        cursor.execute("UPDATE BookRecord SET quantity = quantity - 1 WHERE BookID = %s", (book_id,))
+        conn.commit()
+
+        messagebox.showinfo("Thành công", f"Đã mượn sách: {book_name}\nHạn trả: {due_date}")
+        win.destroy()
+
+    tk.Button(win, text="Xác nhận mượn", command=borrow).pack(pady=10)
+
+def return_book_gui(self):
+    win = tk.Toplevel()
+    win.title("Trả sách")
+    win.geometry("300x200")
+
+    tk.Label(win, text="Mã giao dịch:").pack()
+    trans_entry = tk.Entry(win)
+    trans_entry.pack()
+
+    def return_func():
+        trans_id = trans_entry.get().strip()
+        cursor.execute("SELECT book_id, due_date, status FROM transactions WHERE transaction_id = %s", (trans_id,))
+        result = cursor.fetchone()
+        if not result:
+            messagebox.showerror("Lỗi", "Không tìm thấy giao dịch.")
+            return
+        book_id, due_date, status = result
+        if status == 'returned':
+            messagebox.showinfo("Thông báo", "Giao dịch đã được trả.")
+            return
+
+        return_date = datetime.today().date()
+        new_status = 'returned' if return_date <= due_date else 'overdue'
+
+        cursor.execute("""
+            UPDATE transactions SET return_date=%s, status=%s
+            WHERE transaction_id=%s
+        """, (return_date, new_status, trans_id))
+
+        cursor.execute("UPDATE BookRecord SET quantity = quantity + 1 WHERE BookID = %s", (book_id,))
+        conn.commit()
+
+        messagebox.showinfo("Thành công", f"Trả sách thành công. Trạng thái: {new_status}")
+        win.destroy()
+
+    tk.Button(win, text="Xác nhận trả", command=return_func).pack(pady=10)

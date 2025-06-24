@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import Operations_gui as Operations
-
+from Book_gui import BookApp
 class MainMenuApp:
     def __init__(self, root, role):
         self.root = root
@@ -43,3 +43,10 @@ def Usermenu():
     root = tk.Tk()
     app = MainMenuApp(root, "User")
     root.mainloop()
+
+root = tk.TK()
+root.title("Hệ thống thư viện")
+
+book_app = BookApp(root)
+
+root.mainloop()
