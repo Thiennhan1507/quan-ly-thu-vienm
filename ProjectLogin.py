@@ -15,7 +15,7 @@ def login_to_admin():  # Đăng nhập Admin
         AdminID = input("\t  Nhập Mã Quản trị viên: ")
         password = input("\t  Nhập Mật khẩu: ")
         print()
-        mycursor.execute("SELECT Password FROM AdminRecord WHERE AdminID={0}".format("'" + AdminID + "'"))
+        mycursor.execute("SELECT Password FROM AdminRecord WHERE AdminID = %s", (AdminID,))
         result = mycursor.fetchone()
         if result:
             temp, = result
