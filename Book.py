@@ -3,6 +3,7 @@ import Tables
 
 #----------------------------------------------------------------------------------------
 # Quản trị viên thao tác với Sách
+# hiển thị danh sách hồ sơ sách 
 def displayBook():
     print()
     print("Danh sách Hồ sơ Sách: \n")
@@ -24,6 +25,7 @@ def displayBook():
     input("Nhấn Enter để quay lại menu")
 
 #----------------------------------------------------------------------------------------
+# thêm sách 
 def insertBook():
     while True:
         print()
@@ -41,6 +43,7 @@ def insertBook():
             break
 
 #----------------------------------------------------------------------------------------
+# xóa sách 
 def deleteBook():
     while True:
         print()
@@ -52,6 +55,7 @@ def deleteBook():
             break
 
 #----------------------------------------------------------------------------------------
+# tìm kiếm sách 
 def searchBook():
     while True:
         print()
@@ -78,6 +82,7 @@ def searchBook():
             break
 
 #----------------------------------------------------------------------------------------
+# cập nhật sách
 def updateBook():
     while True:
         print()
@@ -113,6 +118,7 @@ def BookList():
     input("Nhấn Enter để quay lại menu")
 
 #----------------------------------------------------------------------------------------
+# mượn sách 
 def IssueBook():
     check = input("Nhập Mã người dùng của bạn: ")
     mycursor.execute("SELECT BookID FROM UserRecord WHERE UserID={0}".format("'" + check + "'"))
@@ -152,6 +158,7 @@ def IssueBook():
         input("Nhấn Enter để quay lại menu")
 
 #----------------------------------------------------------------------------------------
+# hiển thị danh sách sách đã được mượn (đã phát hành) cho người dùng.
 def ShowIssuedBook():
     print()
     UserID = input("Nhập Mã người dùng của bạn: ")
@@ -174,6 +181,7 @@ def ShowIssuedBook():
         input("Nhấn Enter để quay lại menu")
 
 #----------------------------------------------------------------------------------------
+# trả sách 
 def returnBook():
     print()
     UserID = input("Nhập Mã người dùng của bạn: ")

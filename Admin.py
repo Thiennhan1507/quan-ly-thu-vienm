@@ -2,6 +2,7 @@ import pymysql
 import Tables
 
 #---------------------------------------------------------------------------------------------------------
+# hiển thị danh sách quản trị viên 
 def displayAdmin():
     print("\nDanh sách Quản trị viên: \n")
     mycursor.execute("SELECT * FROM AdminRecord")
@@ -19,6 +20,7 @@ def displayAdmin():
     return
 
 #---------------------------------------------------------------------------------------------------------
+# thêm quản trị viên
 def insertAdmin():
     while True:
         print()
@@ -51,6 +53,7 @@ def insertAdmin():
     return
 
 #---------------------------------------------------------------------------------------------------------
+# xóa quản trị viên 
 def deleteAdmin():
     while True:
         print()
@@ -70,6 +73,7 @@ def deleteAdmin():
     return
 
 #---------------------------------------------------------------------------------------------------------
+# tìm kiếm quản trị viên 
 def searchAdmin():
     while True:
         print()
@@ -91,6 +95,7 @@ def searchAdmin():
     return
 
 #---------------------------------------------------------------------------------------------------------
+# cập nhật quản trị viên 
 def updateAdmin():
     while True:
         print()

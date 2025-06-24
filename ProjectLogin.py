@@ -42,20 +42,29 @@ def login_to_user():  # Đăng nhập người dùng
     print("2. ĐĂNG NHẬP TÀI KHOẢN")
     ch = int(input("Nhập lựa chọn --> "))
     if ch == 1:
-        data = ()
-        UserId = input("Nhập Mã người dùng: ")
-        UserName = input("Nhập Tên người dùng: ")
-        Password = input("Nhập Mật khẩu muốn đặt: ")
-        data = (UserId, UserName, Password, None)
-        query = "INSERT INTO UserRecord VALUES (%s, %s, %s, %s)"
-        mycursor.execute(query, data)
-        mydb.commit()
-        mycursor.execute("SELECT UserId FROM UserRecord WHERE UserId={0}".format("'" + UserId + "'"))
-        result = mycursor.fetchone()
-        if result:
-            print("Tài khoản đã được tạo thành công.")
-        else:
-            print("Tài khoản đã tồn tại.")
+        while True:
+            UserId = input("Nhập Mã người dùng: ")
+            UserName = input("Nhập Tên người dùng: ")
+            Password = input("Nhập Mật khẩu muốn đặt: ")
+            ConfirmPassword = input("Nhập lại Mật khẩu: ")
+
+            if Password != ConfirmPassword:
+                print("Hai mật khẩu không trùng khớp. Vui lòng nhập lại.\n")
+                continue  # quay lại nhập lại
+
+            # Kiểm tra trùng mã người dùng
+            mycursor.execute("SELECT UserId FROM UserRecord WHERE UserId=%s", (UserId,))
+            if mycursor.fetchone():
+                print("Tài khoản với mã này đã tồn tại. Vui lòng dùng mã khác.\n")
+                continue
+
+            # Lưu tài khoản vào CSDL
+            query = "INSERT INTO UserRecord (UserID, UserName, Password, BookID) VALUES (%s, %s, %s, %s)"
+            mycursor.execute(query, (UserId, UserName, Password, None))
+            mydb.commit()
+            print("Tài khoản đã được tạo thành công.\n")
+            break
+
         login_to_user()
 
     elif ch == 2:

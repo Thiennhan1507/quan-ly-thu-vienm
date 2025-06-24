@@ -67,6 +67,7 @@ def UserManagement():
             x = input("Nhấn Enter để tiếp tục")
 
 #----------------------------------------------------------------------------------------
+# quản lý hồ sơ quản trị viên 
 def AdminManagement():
     while True:
         print("\t\t\t Quản lý Hồ sơ Quản trị viên\n")
@@ -96,6 +97,7 @@ def AdminManagement():
             x = input("Nhấn Enter để tiếp tục")
 
 #----------------------------------------------------------------------------------------
+# góp ý và đánh giá của khách hàng 
 def FeedbackTable():
     print()
     print("Bảng Góp ý và Đánh giá: \n")
@@ -138,6 +140,7 @@ def BookCentre():
             x = input("Nhấn Enter để tiếp tục")
 
 #----------------------------------------------------------------------------------------
+# góp ý và đánh giá 
 def Feedback():
     while True:
         data = ()
