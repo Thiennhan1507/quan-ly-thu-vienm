@@ -23,7 +23,7 @@ def BookManagement():
         #print(8)
         print("===============================================================")
         
-        
+
         choice = int(input("Nhập lựa chọn từ 1 đến 6 -------> : "))
         if choice == 1:
             Book.insertBook()
@@ -153,7 +153,7 @@ def Feedback():
         Feedback = input("Hãy nhập góp ý của bạn về Thư viện và cho biết chúng tôi có thể cải thiện điều gì để làm bạn hài lòng hơn!! :)) ----> ")
         Ratings = input("Đánh giá chúng tôi trên thang điểm 10: ")
         data = (Feedback, Ratings)
-        query = "INSERT INTO Feedback VALUES (%s, %s)"
+        query = "INSERT INTO Feedback (Feedback, Rating) VALUES (%s, %s)"
         mycursor.execute(query, data)
         mydb.commit()
         print()
