@@ -197,9 +197,9 @@ def returnBook():
 mydb = pymysql.connect(
     host="localhost",
     user="root",
-    passwd="200511",
+    password="200511",
     database="Library",
-    charset="utf8mb4",
+    charset='utf8mb4',   # hỗ trợ tốt tiếng Việt
     cursorclass=pymysql.cursors.Cursor
 )
 mycursor = mydb.cursor()

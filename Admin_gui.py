@@ -6,11 +6,11 @@ import Tables_gui as Tables
 class AdminApp:
     def __init__(self):
         self.mydb = pymysql.connect(
-            host="localhost",
-            user="root",
-            passwd="200511",
-            database="Library",
-            charset="utf8mb4",
+            host="localhost", 
+            user="root", 
+            password="200511", 
+            database="Library", 
+            charset= "utf8mb4", 
             cursorclass=pymysql.cursors.Cursor
         )
         self.mycursor = self.mydb.cursor()
@@ -134,17 +134,27 @@ class AdminApp:
         password_entry = tk.Entry(win, show="*")
         password_entry.pack()
 
+        tk.Label(win, text="Nhập lại mật khẩu:").pack()
+        confirm_pass_entry = tk.Entry(win, show="*")
+        confirm_pass_entry.pack()
+
+
         def update_admin():
             admin_id = admin_id_entry.get()
             password = password_entry.get()
-            if admin_id and password:
-                query = "UPDATE AdminRecord SET Password=%s WHERE AdminID=%s"
-                self.mycursor.execute(query, (password, admin_id))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Cập nhật mật khẩu thành công.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn cập nhật tài khoản khác không?"):
-                    win.destroy()
-            else:
-                messagebox.showerror("Lỗi", "Vui lòng nhập đầy đủ thông tin.")
+            confirm_pass = confirm_pass_entry.get()
 
-        tk.Button(win, text="Cập nhật", command=update_admin).pack(pady=10)
+            if not admin_id or not password or not confirm_pass:
+                messagebox.showerror("Lỗi", "Vui lòng nhập đầy đủ thông tin.")
+                return
+
+            if password != confirm_pass:
+                messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
+                return
+
+            query = "UPDATE AdminRecord SET Password=%s WHERE AdminID=%s"
+            self.mycursor.execute(query, (password, admin_id))
+            self.mydb.commit()
+            messagebox.showinfo("Thành công", "Cập nhật mật khẩu thành công.")
+            if not messagebox.askyesno("Tiếp tục", "Bạn có muốn cập nhật tài khoản khác không?"):
+                win.destroy()
