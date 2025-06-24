@@ -1,12 +1,34 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 import Operations_gui as Operations
 from Book_gui import BookApp
+from library import get_top_borrowed_books
+
+# Hàm thống kê sách mượn nhiều nhất
+def show_top_borrowed_books():
+    data = get_top_borrowed_books()
+
+    win = tk.Toplevel()
+    win.title("Thống kê sách mượn nhiều nhất")
+    win.geometry("500x300")
+
+    tree = ttk.Treeview(win, columns=("BookName", "TimesBorrowed"), show="headings")
+    tree.heading("BookName", text="Tên sách")
+    tree.heading("TimesBorrowed", text="Số lần mượn")
+    tree.pack(fill="both", expand=True)
+
+    for row in data:
+        tree.insert("", "end", values=row)
+
+    tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
+
+
+# Lớp giao diện chính
 class MainMenuApp:
     def __init__(self, root, role):
         self.root = root
         self.root.title("Thư viện - Giao diện chính")
-        self.root.geometry("400x300")
+        self.root.geometry("400x400")  # Tăng chiều cao để chứa thêm nút thống kê
         self.role = role
 
         if self.role == "Admin":
@@ -21,6 +43,10 @@ class MainMenuApp:
         tk.Button(self.root, text="Quản lý người dùng", command=Operations.UserManagement).pack(pady=10)
         tk.Button(self.root, text="Quản lý quản trị viên", command=Operations.AdminManagement).pack(pady=10)
         tk.Button(self.root, text="Bảng phản hồi", command=Operations.FeedbackTable).pack(pady=10)
+
+        # Nút thống kê sách mượn nhiều nhất
+        tk.Button(self.root, text="Thống kê sách mượn nhiều nhất", command=show_top_borrowed_books).pack(pady=10)
+
         tk.Button(self.root, text="Đăng xuất", command=self.dang_xuat).pack(pady=10)
 
     def menu_nguoi_dung(self):
@@ -28,25 +54,29 @@ class MainMenuApp:
 
         tk.Button(self.root, text="Trung tâm sách", command=Operations.BookCentre).pack(pady=10)
         tk.Button(self.root, text="Góp ý và đánh giá", command=Operations.Feedback).pack(pady=10)
+
+        tk.Button(self.root, text="Thống kê sách mượn nhiều nhất", command=show_top_borrowed_books).pack(pady=10)
+
         tk.Button(self.root, text="Đăng xuất", command=self.dang_xuat).pack(pady=10)
 
     def dang_xuat(self):
         messagebox.showinfo("Đăng xuất", "Cảm ơn bạn đã sử dụng thư viện! Đã đăng xuất.")
         self.root.destroy()
 
+
+# Gọi hàm tạo menu tương ứng
 def Adminmenu():
     root = tk.Tk()
     app = MainMenuApp(root, "Admin")
     root.mainloop()
+
 
 def Usermenu():
     root = tk.Tk()
     app = MainMenuApp(root, "User")
     root.mainloop()
 
-root = tk.TK()
-root.title("Hệ thống thư viện")
 
-book_app = BookApp(root)
-
-root.mainloop()
+# Tùy chọn muốn chạy mặc định là admin hay user
+if __name__ == "__main__":
+    Adminmenu()  # Hoặc Usermenu() nếu muốn mở mặc định giao diện người dùng
