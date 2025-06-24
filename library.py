@@ -1,13 +1,14 @@
-import mysql.connector
+import pymysql
 from datetime import datetime, timedelta
 
-# ⚙️ Cấu hình kết nối MySQL
-conn = mysql.connector.connect(
-    host='127.0.0.1',
-    user='root',
-    password='taolao',
-    database='library_db'
-)
+conn = pymysql.connect(
+            host="localhost",
+            user="root",
+            passwd="200511",
+            database="Library",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.Cursor
+        )
 cursor = conn.cursor()
 
 
@@ -21,11 +22,11 @@ def borrow_book(user_id, book_id):
     cursor.execute("SELECT title FROM books WHERE book_id = %s", (book_id,))
     book = cursor.fetchone()
     if not book:
-        print("❌ Sách không tồn tại.")
+        print("Sách không tồn tại.")
         return
 
     if not check_book_availability(book_id):
-        print("❌ Sách đã hết.")
+        print("Sách đã hết.")
         return
 
     borrow_date = datetime.today().date()
@@ -38,7 +39,7 @@ def borrow_book(user_id, book_id):
 
     cursor.execute("UPDATE books SET quantity = quantity - 1 WHERE book_id = %s", (book_id,))
     conn.commit()
-    print(f"✅ Mượn sách thành công: {book[0]} (Hạn trả: {due_date})")
+    print(f"Mượn sách thành công: {book[0]} (Hạn trả: {due_date})")
 
 
 def return_book(transaction_id):
@@ -48,7 +49,7 @@ def return_book(transaction_id):
     result = cursor.fetchone()
 
     if not result:
-        print("❌ Giao dịch không tồn tại.")
+        print("Giao dịch không tồn tại.")
         return
 
     book_id, due_date = result
@@ -62,7 +63,7 @@ def return_book(transaction_id):
 
     cursor.execute("UPDATE books SET quantity = quantity + 1 WHERE book_id = %s", (book_id,))
     conn.commit()
-    print(f"✅ Trả sách thành công. Trạng thái: {status}")
+    print(f"Trả sách thành công. Trạng thái: {status}")
 
 
 def get_top_borrowed_books(limit=5):
@@ -77,10 +78,10 @@ def get_top_borrowed_books(limit=5):
 
     results = cursor.fetchall()
     if not results:
-        print("❗ Không có dữ liệu mượn sách.")
+        print("Không có dữ liệu mượn sách.")
         return
 
-    print("📊 Sách được mượn nhiều nhất:")
+    print("Sách được mượn nhiều nhất:")
     for title, count in results:
         print(f"- {title} ({count} lần)")
 
@@ -92,7 +93,7 @@ def main_menu():
         print("2. Trả sách")
         print("3. Thống kê sách mượn nhiều nhất")
         print("0. Thoát")
-        choice = input("👉 Nhập lựa chọn của bạn: ")
+        choice = input("Nhập lựa chọn của bạn: ")
 
         if choice == '1':
             try:
@@ -100,20 +101,20 @@ def main_menu():
                 book_id = int(input("Nhập ID sách: "))
                 borrow_book(user_id, book_id)
             except:
-                print("⚠️ Dữ liệu nhập không hợp lệ.")
+                print("Dữ liệu nhập không hợp lệ.")
         elif choice == '2':
             try:
                 transaction_id = int(input("Nhập ID giao dịch: "))
                 return_book(transaction_id)
             except:
-                print("⚠️ Dữ liệu nhập không hợp lệ.")
+                print("Dữ liệu nhập không hợp lệ.")
         elif choice == '3':
             get_top_borrowed_books()
         elif choice == '0':
-            print("👋 Tạm biệt!")
+            print("Tạm biệt!")
             break
         else:
-            print("⚠️ Lựa chọn không hợp lệ. Vui lòng thử lại.")
+            print("Lựa chọn không hợp lệ. Vui lòng thử lại.")
 
 
 if __name__ == "__main__":
