@@ -20,6 +20,9 @@ class BookApp:
         tk.Button(frame, text="Mượn sách", command=self.borrow_book_gui).pack(pady=5)
         tk.Button(frame, text="Trả sách", command=self.return_book_gui).pack(pady=5)
 
+        # Nút hiển thị sách quá hạn 
+        tk.Button(frame, text="Hiển thị sách quá hạn", command=self.display_overdue_books).pack(pady=5)
+
 
     def displayBook(self):
         win = tk.Toplevel()
@@ -90,23 +93,37 @@ class BookApp:
         win.geometry("300x150")
 
         tk.Label(win, text="Xóa sách", font=("Arial", 14)).pack(pady=10)
-        
         tk.Label(win, text="Nhập mã sách:").pack()
         book_id_entry = tk.Entry(win)
         book_id_entry.pack()
 
         def delete_book():
-            book_id = book_id_entry.get()
-            if book_id:
-                self.mycursor.execute("DELETE FROM BookRecord WHERE BookID=%s", (book_id,))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Đã xóa sách.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn xóa sách khác không?"):
-                    win.destroy()
-            else:
+            book_id = book_id_entry.get().strip()
+            if not book_id:
                 messagebox.showerror("Lỗi", "Vui lòng nhập mã sách.")
+                return
 
-        tk.Button(win, text="Xóa", command=delete_book).pack(pady=10)
+            # Kiểm tra sách có tồn tại không
+            self.mycursor.execute("SELECT BookName FROM BookRecord WHERE BookID = %s", (book_id,))
+            result = self.mycursor.fetchone()
+            if not result:
+                messagebox.showwarning("Không tìm thấy", f"Sách với mã {book_id} không tồn tại.")
+                return
+
+            book_name = result[0]
+            # Xác nhận xóa
+            confirm = messagebox.askyesno("Xác nhận", f"Bạn có chắc muốn xóa sách '{book_name}'?")
+            if not confirm:
+                return
+
+            # Thực hiện xóa
+            self.mycursor.execute("DELETE FROM BookRecord WHERE BookID=%s", (book_id,))
+            self.mydb.commit()
+            messagebox.showinfo("Thành công", f"Đã xóa sách: {book_name}")
+            win.destroy()
+
+            tk.Button(win, text="Xóa", command=delete_book).pack(pady=10)
+
 
     def searchBook(self):
         win = tk.Toplevel()
@@ -154,7 +171,6 @@ class BookApp:
         win.geometry("300x300")
 
         tk.Label(win, text="Cập nhật sách", font=("Arial", 14)).pack(pady=10)
-        
         tk.Label(win, text="Mã sách:").pack()
         book_id_entry = tk.Entry(win)
         book_id_entry.pack()
@@ -172,98 +188,141 @@ class BookApp:
         publisher_entry.pack()
 
         def update_book():
-            book_id = book_id_entry.get()
-            book_name = book_name_entry.get()
-            author = author_entry.get()
-            publisher = publisher_entry.get()
-            if all([book_id, book_name, author, publisher]):
-                query = "UPDATE BookRecord SET BookName=%s, Author=%s, Publisher=%s WHERE BookID=%s"
-                self.mycursor.execute(query, (book_name, author, publisher, book_id))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Đã cập nhật thông tin sách.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn cập nhật sách khác không?"):
-                    win.destroy()
-            else:
-                messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ thông tin.")
+            book_id = book_id_entry.get().strip()
+            book_name = book_name_entry.get().strip()
+            author = author_entry.get().strip()
+            publisher = publisher_entry.get().strip()
+
+            if not all([book_id, book_name, author, publisher]):
+                    messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ thông tin.")
+                    return
+
+            # Kiểm tra sách tồn tại
+            self.mycursor.execute("SELECT BookName FROM BookRecord WHERE BookID = %s", (book_id,))
+            result = self.mycursor.fetchone()
+            if not result:
+                messagebox.showwarning("Không tìm thấy", f"Sách với mã {book_id} không tồn tại.")
+                return
+
+            self.mycursor.execute("""
+                UPDATE BookRecord 
+                SET BookName=%s, Author=%s, Publisher=%s 
+                WHERE BookID=%s
+                """, (book_name, author, publisher, book_id))
+            self.mydb.commit()
+
+            messagebox.showinfo("Thành công", f"Đã cập nhật sách có mã: {book_id}")
+            win.destroy()
 
         tk.Button(win, text="Cập nhật", command=update_book).pack(pady=10)
 
-def borrow_book_gui(self):
-    win = tk.Toplevel()
-    win.title("Mượn sách")
-    win.geometry("300x250")
+    # mượn sách 
+    def borrow_book_gui(self):
+        win = tk.Toplevel()
+        win.title("Mượn sách")
+        win.geometry("300x250")
 
-    tk.Label(win, text="Mã người dùng:").pack()
-    user_entry = tk.Entry(win)
-    user_entry.pack()
+        tk.Label(win, text="Mã người dùng:").pack()
+        user_entry = tk.Entry(win)
+        user_entry.pack()
 
-    tk.Label(win, text="Mã sách:").pack()
-    book_entry = tk.Entry(win)
-    book_entry.pack()
+        tk.Label(win, text="Mã sách:").pack()
+        book_entry = tk.Entry(win)
+        book_entry.pack()
 
-    def borrow():
-        user_id = user_entry.get().strip()
-        book_id = book_entry.get().strip()
+        def borrow():
+            user_id = user_entry.get().strip()
+            book_id = book_entry.get().strip()
 
-        cursor.execute("SELECT BookName, quantity FROM BookRecord WHERE BookID = %s", (book_id,))
-        result = cursor.fetchone()
-        if not result:
-            messagebox.showerror("Lỗi", "Sách không tồn tại.")
-            return
-        book_name, quantity = result
-        if quantity <= 0:
-            messagebox.showwarning("Hết sách", "Sách đã hết.")
-            return
+            cursor.execute("SELECT BookName, quantity FROM BookRecord WHERE BookID = %s", (book_id,))
+            result = cursor.fetchone()
+            if not result:
+                messagebox.showerror("Lỗi", "Sách không tồn tại.")
+                return
+            book_name, quantity = result
+            if quantity <= 0:
+                messagebox.showwarning("Hết sách", "Sách đã hết.")
+                return
 
-        borrow_date = datetime.today().date()
-        due_date = borrow_date + timedelta(days=7)
+            borrow_date = datetime.today().date()
+            due_date = borrow_date + timedelta(days=7)
 
-        cursor.execute("""
-            INSERT INTO transactions (user_id, book_id, borrow_date, due_date, status)
-            VALUES (%s, %s, %s, %s, 'borrowed')
-        """, (user_id, book_id, borrow_date, due_date))
+            cursor.execute("""
+                INSERT INTO transactions (user_id, book_id, borrow_date, due_date, status)
+                VALUES (%s, %s, %s, %s, 'borrowed')
+                """, (user_id, book_id, borrow_date, due_date))
 
-        cursor.execute("UPDATE BookRecord SET quantity = quantity - 1 WHERE BookID = %s", (book_id,))
-        conn.commit()
+            cursor.execute("UPDATE BookRecord SET quantity = quantity - 1 WHERE BookID = %s", (book_id,))
+            conn.commit()
 
-        messagebox.showinfo("Thành công", f"Đã mượn sách: {book_name}\nHạn trả: {due_date}")
-        win.destroy()
+            messagebox.showinfo("Thành công", f"Đã mượn sách: {book_name}\nHạn trả: {due_date}")
+            win.destroy()
 
-    tk.Button(win, text="Xác nhận mượn", command=borrow).pack(pady=10)
+        tk.Button(win, text="Xác nhận mượn", command=borrow).pack(pady=10)
 
-def return_book_gui(self):
-    win = tk.Toplevel()
-    win.title("Trả sách")
-    win.geometry("300x200")
+    # trả sách 
+    def return_book_gui(self):
+        win = tk.Toplevel()
+        win.title("Trả sách")
+        win.geometry("300x200")
 
-    tk.Label(win, text="Mã giao dịch:").pack()
-    trans_entry = tk.Entry(win)
-    trans_entry.pack()
+        tk.Label(win, text="Mã giao dịch:").pack()
+        trans_entry = tk.Entry(win)
+        trans_entry.pack()
 
-    def return_func():
-        trans_id = trans_entry.get().strip()
-        cursor.execute("SELECT book_id, due_date, status FROM transactions WHERE transaction_id = %s", (trans_id,))
-        result = cursor.fetchone()
-        if not result:
-            messagebox.showerror("Lỗi", "Không tìm thấy giao dịch.")
-            return
-        book_id, due_date, status = result
-        if status == 'returned':
-            messagebox.showinfo("Thông báo", "Giao dịch đã được trả.")
-            return
+        def return_func():
+            trans_id = trans_entry.get().strip()
+            cursor.execute("SELECT book_id, due_date, status FROM transactions WHERE transaction_id = %s", (trans_id,))
+            result = cursor.fetchone()
+            if not result:
+                messagebox.showerror("Lỗi", "Không tìm thấy giao dịch.")
+                return
+            book_id, due_date, status = result
+            if status == 'returned':
+                messagebox.showinfo("Thông báo", "Giao dịch đã được trả.")
+                return
 
-        return_date = datetime.today().date()
-        new_status = 'returned' if return_date <= due_date else 'overdue'
+            return_date = datetime.today().date()
+            new_status = 'returned' if return_date <= due_date else 'overdue'
 
-        cursor.execute("""
-            UPDATE transactions SET return_date=%s, status=%s
-            WHERE transaction_id=%s
-        """, (return_date, new_status, trans_id))
+            cursor.execute("""
+                UPDATE transactions SET return_date=%s, status=%s
+                WHERE transaction_id=%s
+                """, (return_date, new_status, trans_id))
 
-        cursor.execute("UPDATE BookRecord SET quantity = quantity + 1 WHERE BookID = %s", (book_id,))
-        conn.commit()
+            cursor.execute("UPDATE BookRecord SET quantity = quantity + 1 WHERE BookID = %s", (book_id,))
+            conn.commit()
 
-        messagebox.showinfo("Thành công", f"Trả sách thành công. Trạng thái: {new_status}")
-        win.destroy()
+            messagebox.showinfo("Thành công", f"Trả sách thành công. Trạng thái: {new_status}")
+            win.destroy()
 
-    tk.Button(win, text="Xác nhận trả", command=return_func).pack(pady=10)
+        tk.Button(win, text="Xác nhận trả", command=return_func).pack(pady=10)
+
+    # hiển thị sách quá hạn 
+    def display_overdue_books(self):
+        win = tk.Toplevel()
+        win.title("Sách quá hạn")
+        win.geometry("700x400")
+
+        tree = ttk.Treeview(win, columns=("BookName", "UserID", "UserName", "BorrowDate", "DueDate", "Status"), show="headings")
+        tree.heading("BookName", text="Tên sách")
+        tree.heading("UserID", text="Mã người mượn")
+        tree.heading("UserName", text="Họ tên người mượn")
+        tree.heading("BorrowDate", text="Ngày mượn")
+        tree.heading("DueDate", text="Hạn trả")
+        tree.heading("Status", text="Trạng thái")
+        tree.pack(fill="both", expand=True)
+
+        self.mycursor.execute("""
+            SELECT b.BookName, u.UserID, u.UserName, t.borrow_date, t.due_date, t.status
+            FROM transactions t
+            JOIN BookRecord b ON t.book_id = b.BookID
+            JOIN UserRecord u ON t.user_id = u.UserID
+            WHERE t.status = 'overdue'
+            """)
+        records = self.mycursor.fetchall()
+
+        for row in records:
+            tree.insert("", "end", values=row)
+
+        tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
