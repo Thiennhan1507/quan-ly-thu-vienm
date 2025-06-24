@@ -19,7 +19,10 @@ def BookManagement():
         print("4. Xóa hồ sơ sách")
         print("5. Cập nhật hồ sơ sách")
         print("6. Quay lại Menu chính")
+        #print(7)
+        #print(8)
         print("===============================================================")
+        
         
         choice = int(input("Nhập lựa chọn từ 1 đến 6 -------> : "))
         if choice == 1:

@@ -138,7 +138,7 @@ def main_menu():
                 transaction_id = int(input("Nhập ID giao dịch: "))
                 return_book(transaction_id)
             except:
-                print("Dữ liệu nhập k   hông hợp lệ.")
+                print("Dữ liệu nhập không hợp lệ.")
         elif choice == '3':
             get_top_borrowed_books()
         elif choice == '0':
