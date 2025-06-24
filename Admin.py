@@ -1,85 +1,129 @@
-import mysql.connector
+import pymysql
 import Tables
-#---------------------------------------------------------------------------------------------------------                 
+
+#---------------------------------------------------------------------------------------------------------
 def displayAdmin():
-    print()
-    print("Admin Records: \n")
+    print("\nDanh sách Quản trị viên: \n")
     mycursor.execute("SELECT * FROM AdminRecord")
-    records=mycursor.fetchall()
-    row_no=0
-    for rows in records :
-        row_no+=1
-        print("******************************","Row no.",row_no,"******************************")
-        print("\t             AdminID: ", rows[0])
-        print("\t            Password: ", rows[1])
-        print()
-    x=input("Press Enter to continue")
+    records = mycursor.fetchall()
+
+    if not records:
+        print("Hiện chưa có quản trị viên nào trong hệ thống.")
+    else:
+        for i, row in enumerate(records, 1):
+            print("****************************** Hàng số", i, "******************************")
+            print("\t Mã Quản trị viên:", row[0])
+            print("\t Mật khẩu:", row[1])
+            print()
+    input("Nhấn Enter để tiếp tục...")
     return
-#---------------------------------------------------------------------------------------------------------         
+
+#---------------------------------------------------------------------------------------------------------
 def insertAdmin():
-    while True :
-        data=()
+    while True:
         print()
-        AdminID=input("Enter AdminID: ")
-        Password=input(" Enter Password to be set: ")
-        data=(AdminID,Password)
-        query="INSERT INTO AdminRecord VALUES (%s, %s)"
-        mycursor.execute(query,data)
+        AdminID = input("Nhập Mã Quản trị viên mới: ").strip()
+
+        # Kiểm tra trùng mã
+        mycursor.execute("SELECT AdminID FROM AdminRecord WHERE AdminID = %s", (AdminID,))
+        if mycursor.fetchone():
+            print("Mã Quản trị viên đã tồn tại. Vui lòng dùng mã khác.\n")
+            continue
+
+        # Nhập và xác nhận mật khẩu
+        while True:
+            Password = input("Nhập Mật khẩu: ").strip()
+            Confirm = input("Nhập lại Mật khẩu: ").strip()
+            if Password != Confirm:
+                print("Hai mật khẩu không khớp. Vui lòng nhập lại.\n")
+            elif not Password:
+                print("Mật khẩu không được để trống.\n")
+            else:
+                break
+
+        mycursor.execute("INSERT INTO AdminRecord (AdminID, Password) VALUES (%s, %s)", (AdminID, Password))
         mydb.commit()
-        print()
-        ch=input("Do you wish to do add more Administrators?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Thêm Quản trị viên thành công.\n")
+
+        ch = input("Bạn có muốn thêm Quản trị viên khác không? [Yes/No]: ").strip().lower()
+        if ch != "yes":
             break
     return
-#---------------------------------------------------------------------------------------------------------         
+
+#---------------------------------------------------------------------------------------------------------
 def deleteAdmin():
     while True:
         print()
-        AdminID=input(" Enter AdminID whose details to be deleted : ")  
-        mycursor.execute("DELETE from AdminRecord where AdminID={0}".format("\'"+AdminID+"\'"))
+        AdminID = input("Nhập Mã Quản trị viên cần xóa: ").strip()
+        mycursor.execute("SELECT * FROM AdminRecord WHERE AdminID = %s", (AdminID,))
+        if not mycursor.fetchone():
+            print("Không tìm thấy mã Quản trị viên này.\n")
+            continue
+
+        mycursor.execute("DELETE FROM AdminRecord WHERE AdminID = %s", (AdminID,))
         mydb.commit()
-        ch=input("Do you wish to delete more Administrators?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Xóa Quản trị viên thành công.\n")
+
+        ch = input("Bạn có muốn xóa Quản trị viên khác không? [Yes/No]: ").strip().lower()
+        if ch != "yes":
             break
     return
-#---------------------------------------------------------------------------------------------------------     
+
+#---------------------------------------------------------------------------------------------------------
 def searchAdmin():
     while True:
         print()
-        Search=input(" Enter AdminID to be Searched: ")  
-        mycursor.execute("SELECT * FROM AdminRecord where AdminID={0}".format("\'"+Search+"\'"))
-        records=mycursor.fetchall()
-        row_no=0
+        AdminID = input("Nhập Mã Quản trị viên cần tìm: ").strip()
+        mycursor.execute("SELECT * FROM AdminRecord WHERE AdminID = %s", (AdminID,))
+        records = mycursor.fetchall()
         if records:
-            for rows in records :
-                row_no+=1
-                print("******************************","Searched Admin Record","******************************")
-                print("\t             AdminID: ", rows[0])
-                print("\t            Password: ", rows[1])
+            for row in records:
+                print("****************************** Kết quả tìm kiếm ******************************")
+                print("\t Mã Quản trị viên:", row[0])
+                print("\t Mật khẩu:", row[1])
                 print()
         else:
-            print("Search Unsuccesfull")
-            
-        ch=input("Do you wish to Search more Administrators?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+            print("Không tìm thấy kết quả phù hợp.\n")
+
+        ch = input("Bạn có muốn tìm thêm Quản trị viên khác không? [Yes/No]: ").strip().lower()
+        if ch != "yes":
             break
     return
-#--------------------------------------------------------------------------------------------------------- 
+
+#---------------------------------------------------------------------------------------------------------
 def updateAdmin():
     while True:
         print()
-        data=()
-        AdminID=input(" Enter Admin ID for whose details need to be updated : ")
-        Password=input(" Enter new Password : ")
-        query="UPDATE AdminRecord SET Password = %s WHERE AdminID=%s"
-        data=(Password,AdminID)
-        mycursor.execute(query,data)
+        AdminID = input("Nhập Mã Quản trị viên cần cập nhật: ").strip()
+        mycursor.execute("SELECT * FROM AdminRecord WHERE AdminID = %s", (AdminID,))
+        if not mycursor.fetchone():
+            print("Không tìm thấy mã Quản trị viên này.\n")
+            continue
+
+        while True:
+            NewPassword = input("Nhập Mật khẩu mới: ").strip()
+            Confirm = input("Nhập lại Mật khẩu mới: ").strip()
+            if NewPassword != Confirm:
+                print("Hai mật khẩu không trùng khớp. Vui lòng thử lại.\n")
+            else:
+                break
+
+        mycursor.execute("UPDATE AdminRecord SET Password = %s WHERE AdminID = %s", (NewPassword, AdminID))
         mydb.commit()
-        ch=input("Do you wish to Search more Administrators?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Cập nhật mật khẩu thành công.\n")
+
+        ch = input("Bạn có muốn cập nhật Quản trị viên khác không? [Yes/No]: ").strip().lower()
+        if ch != "yes":
             break
     return
-#--------------------------------------------------------------------------------------------------------- 
-mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao",database="Library")
-mycursor=mydb.cursor()
-     
+
+#---------------------------------------------------------------------------------------------------------
+mydb = pymysql.connect(
+    host="localhost",
+    user="root",
+    passwd="200511",
+    database="Library",
+    charset="utf8mb4",
+    cursorclass=pymysql.cursors.Cursor
+)
+mycursor = mydb.cursor()

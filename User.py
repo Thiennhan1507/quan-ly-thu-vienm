@@ -1,101 +1,108 @@
-import mysql.connector
+import pymysql
 import Tables
-        
+
 #--------------------------------------------------------------------------------------------------------------------------------        
 def displayUser():
     print()
-    print("User Records: \n")
+    print("Danh sách người dùng: \n")
     mycursor.execute("""SELECT UserRecord.UserID,UserRecord.UserName,UserRecord.Password,BookRecord.BookName,BookRecord.BookID
                         FROM UserRecord
                         LEFT JOIN BookRecord ON UserRecord.BookID=BookRecord.BookID""")
-    records=mycursor.fetchall()
-    row_no=0
-    for rows in records :
-        row_no+=1
-        print("******************************","Row no.",row_no,"******************************")
-        print("\t             UserID: ", rows[0])
-        print("\t           UserName: ", rows[1])
-        print("\t           Password: ", rows[2])
-        print("\t        Book Issued: ", rows[3])
-        print("\t         Its BookID: ", rows[4])
+    records = mycursor.fetchall()
+    row_no = 0
+    for rows in records:
+        row_no += 1
+        print("******************************", "Người dùng số", row_no, "******************************")
+        print("\t             Mã người dùng: ", rows[0])
+        print("\t               Họ và tên: ", rows[1])
+        print("\t                 Mật khẩu: ", rows[2])
+        print("\t        Sách đang mượn: ", rows[3])
+        print("\t              Mã sách: ", rows[4])
         print()
-    x=input("Press any key to return to the User Menu")
+    input("Nhấn phím bất kỳ để quay lại menu...")
     return
+
 #--------------------------------------------------------------------------------------------------------------------------------             
 def insertUser():
-    while True :
-        data=()
+    while True:
+        data = ()
         print()
-        UserID=input(" Enter UserID: ")
-        UserName=input(" Enter User Name: ")
-        Password=input(" Enter Password to be Set: ")
-        data=(UserID, UserName, Password,None)
-        query="INSERT INTO UserRecord VALUES (%s, %s, %s,%s)"
-        mycursor.execute(query,data)
+        UserID = input("Nhập mã người dùng: ")
+        UserName = input("Nhập họ và tên người dùng: ")
+        Password = input("Nhập mật khẩu: ")
+        data = (UserID, UserName, Password, None)
+        query = "INSERT INTO UserRecord VALUES (%s, %s, %s, %s)"
+        mycursor.execute(query, data)
         mydb.commit()
-        print()
-        ch=input("Do you wish to do add more Users?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Thêm người dùng thành công!\n")
+        ch = input("Bạn có muốn thêm người dùng khác không? [Yes/No]: ")
+        if ch.lower() == "no":
             break
     return
+
 #--------------------------------------------------------------------------------------------------------------------------------             
 def deleteUser():
     while True:
         print()
-        UserID=input(" Enter UserID whose details to be deleted : ")  
-        mycursor.execute("DELETE from UserRecord where UserID = {0} ".format("\'"+UserID+"\'"))
+        UserID = input("Nhập mã người dùng cần xóa: ")
+        mycursor.execute("DELETE FROM UserRecord WHERE UserID = %s", (UserID,))
         mydb.commit()
-        ch=input("Do you wish to delete more Users?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Xóa người dùng thành công!")
+        ch = input("Bạn có muốn xóa người dùng khác không? [Yes/No]: ")
+        if ch.lower() == "no":
             break
     return
+
 #--------------------------------------------------------------------------------------------------------------------------------         
 def searchUser():
     while True:
         print()
-        Search=input(" Enter UserID to be Searched: ")  
-        mycursor.execute("SELECT UserID, UserName, Password , BookName, UserRecord.BookID\
-                    FROM Library.UserRecord LEFT JOIN Library.BookRecord\
-                    ON BookRecord.BookID=UserRecord.BookID\
-                    WHERE UserRecord.UserID={0}".format("\'"+Search+"\'"))
-        records=mycursor.fetchall()
-        row_no=0
+        Search = input("Nhập mã người dùng cần tìm: ")
+        mycursor.execute("""SELECT UserID, UserName, Password , BookName, UserRecord.BookID
+                            FROM Library.UserRecord 
+                            LEFT JOIN Library.BookRecord ON BookRecord.BookID = UserRecord.BookID
+                            WHERE UserRecord.UserID = %s""", (Search,))
+        records = mycursor.fetchall()
         if records:
-            for rows in records :
-                row_no+=1
-                print("******************************","Searched User Record","******************************")
-                print("\t             UserID: ", rows[0])
-                print("\t           UserName: ", rows[1])
-                print("\t           Password: ", rows[2])
-                print("\t        Book Issued: ", rows[3])
-                print("\t         Its BookID: ", rows[4])
+            for rows in records:
+                print("******************************", "Kết quả tìm kiếm", "******************************")
+                print("\t             Mã người dùng: ", rows[0])
+                print("\t               Họ và tên: ", rows[1])
+                print("\t                 Mật khẩu: ", rows[2])
+                print("\t        Sách đang mượn: ", rows[3])
+                print("\t              Mã sách: ", rows[4])
                 print()
         else:
-            print("Search Unsuccesfull")
-            
-        ch=input("Do you wish to Search more Users?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+            print("Không tìm thấy người dùng.")
+
+        ch = input("Bạn có muốn tìm thêm người dùng khác không? [Yes/No]: ")
+        if ch.lower() == "no":
             break
     return
+
 #--------------------------------------------------------------------------------------------------------------------------------     
 def updateUser():
     while True:
         print()
-        data=()
-        UserID=input(" Enter User ID for whose details need to be updated : ")
-        UserName=input(" Enter Updated User Name : ")
-        Password=input(" Enter Updated Password : ")
-        query="UPDATE UserRecord SET Username = %s, Password = %s WHERE UserID=%s"
-        data=(UserName,Password,UserID)
-        mycursor.execute(query,data)
+        UserID = input("Nhập mã người dùng cần cập nhật: ")
+        UserName = input("Nhập tên người dùng mới: ")
+        Password = input("Nhập mật khẩu mới: ")
+        query = "UPDATE UserRecord SET Username = %s, Password = %s WHERE UserID = %s"
+        data = (UserName, Password, UserID)
+        mycursor.execute(query, data)
         mydb.commit()
-        print("Updated succesfully")
-        ch=input("Do you wish to Update more Users?[Yes/No] : ")
-        if ch=="no" or ch=="No" or ch=="NO":
+        print("Cập nhật thành công!")
+        ch = input("Bạn có muốn cập nhật người dùng khác không? [Yes/No]: ")
+        if ch.lower() == "no":
             break
-    return   
+    return    
 #--------------------------------------------------------------------------------------------------------------------------------     
-mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao",database="Library")
-mycursor=mydb.cursor()
-
-        
+mydb = pymysql.connect(
+    host="localhost",
+    user="root",
+    passwd="200511",
+    database="Library",
+    charset="utf8mb4",
+    cursorclass=pymysql.cursors.Cursor
+)
+mycursor = mydb.cursor()

@@ -3,24 +3,24 @@ import User
 import Admin
 import Tables
 import Bookutils
-import mysql.connector
+import pymysql
+
 #----------------------------------------------------------------------------------------
-#Operations for Admin Menu
+# Chức năng dành cho Menu Quản trị viên
 
 def BookManagement():
     while True:
-        print("\t\t\t Book Record Management\n")
+        print("\t\t\t Quản lý Hồ sơ Sách\n")
         print("==============================================================")
-        print("1. Add Book Record")
-        print("2. Display Book Records")
-        print("3. Search Book Record")
-        print("4. Delete Book Record")
-        print("5. Update Book Record")
-        print("6. Search Books by Name or Author")
-        print("7. View Book Statistics")
-        print("8. Return to Main Menu")
+        print("1. Thêm hồ sơ sách")
+        print("2. Hiển thị danh sách sách")
+        print("3. Tìm kiếm sách")
+        print("4. Xóa hồ sơ sách")
+        print("5. Cập nhật hồ sơ sách")
+        print("6. Quay lại Menu chính")
         print("===============================================================")
-        choice = int(input("Enter Choice between 1 to 8-------> : "))
+        
+        choice = int(input("Nhập lựa chọn từ 1 đến 6 -------> : "))
         if choice == 1:
             Book.insertBook()
         elif choice == 2:
@@ -32,129 +32,135 @@ def BookManagement():
         elif choice == 5:
             Book.updateBook()
         elif choice == 6:
-            Bookutils.searchBookByNameOrAuthor()
-        elif choice == 7:
-            Bookutils.bookStatistics()
-        elif choice == 8:
             return
         else:
-            print("Wrong Choice... Enter your choice again.")
-            input("Press Enter to continue")
+            print("Lựa chọn không hợp lệ......Vui lòng nhập lại lựa chọn của bạn")
+            x = input("Nhấn Enter để tiếp tục")
 
 #----------------------------------------------------------------------------------------
 def UserManagement():
     while True:
-        print("\t\t\t User Record Management\n")
+        print("\t\t\t Quản lý Hồ sơ Người dùng\n")
         print("==============================================================")
-        print("1. Add User Record")
-        print("2. Display User Records")
-        print("3. Search User Record")
-        print("4. Delete User Record")
-        print("5. Update User Record")
-        print("6. Return to Main Menu")
+        print("1. Thêm hồ sơ người dùng")
+        print("2. Hiển thị danh sách người dùng")
+        print("3. Tìm kiếm người dùng")
+        print("4. Xóa hồ sơ người dùng")
+        print("5. Cập nhật hồ sơ người dùng")
+        print("6. Quay lại Menu chính")
         print("===============================================================")
-        choice=int(input("Enter Choice between 1 to 5-------> : "))
-        if choice==1:
+        choice = int(input("Nhập lựa chọn từ 1 đến 6 -------> : "))
+        if choice == 1:
             User.insertUser()
-        elif choice==2:
+        elif choice == 2:
             User.displayUser()
-        elif choice==3:
+        elif choice == 3:
             User.searchUser()
-        elif choice==4:
+        elif choice == 4:
             User.deleteUser()
-        elif choice==5:
+        elif choice == 5:
             User.updateUser()
-        elif choice==6:
+        elif choice == 6:
             return
         else:
-            print("Wrong Choice......Enter Your Choice again")
-            x=input("Press Enter to continue")
+            print("Lựa chọn không hợp lệ......Vui lòng nhập lại lựa chọn của bạn")
+            x = input("Nhấn Enter để tiếp tục")
+
 #----------------------------------------------------------------------------------------
 def AdminManagement():
     while True:
-        print("\t\t\t Admin Record Management\n")
+        print("\t\t\t Quản lý Hồ sơ Quản trị viên\n")
         print("==============================================================")
-        print("1. Add Admin Record")
-        print("2. Display Admin Records")
-        print("3. Search Admin Record")
-        print("4. Delete Admin Record")
-        print("5. Update Admin Record")
-        print("6. Return to Main Menu")
+        print("1. Thêm hồ sơ quản trị viên")
+        print("2. Hiển thị danh sách quản trị viên")
+        print("3. Tìm kiếm quản trị viên")
+        print("4. Xóa hồ sơ quản trị viên")
+        print("5. Cập nhật hồ sơ quản trị viên")
+        print("6. Quay lại Menu chính")
         print("===============================================================")
-        choice=int(input("Enter Choice between 1 to 5-------> : "))
-        if choice==1:
+        choice = int(input("Nhập lựa chọn từ 1 đến 6 -------> : "))
+        if choice == 1:
             Admin.insertAdmin()
-        elif choice==2:
+        elif choice == 2:
             Admin.displayAdmin()
-        elif choice==3:
+        elif choice == 3:
             Admin.searchAdmin()
-        elif choice==4:
+        elif choice == 4:
             Admin.deleteAdmin()
-        elif choice==5:
+        elif choice == 5:
             Admin.updateAdmin()
-        elif choice==6:
+        elif choice == 6:
             return
         else:
-            print("Wrong Choice......Enter Your Choice again")
-            x=input("Press Enter to continue")
+            print("Lựa chọn không hợp lệ......Vui lòng nhập lại lựa chọn của bạn")
+            x = input("Nhấn Enter để tiếp tục")
 
+#----------------------------------------------------------------------------------------
 def FeedbackTable():
     print()
-    print("Feeback and Rating Table: \n")
+    print("Bảng Góp ý và Đánh giá: \n")
     mycursor.execute("SELECT * from Feedback")
-    records=mycursor.fetchall()
-    row_no=0
-    for rows in records :
-        row_no+=1
-        print("******************************","Row no.",row_no,"******************************")
-        print("\t             Feedbacks: ", rows[0])
-        print("\t      Rating out of 10: ", rows[1])
-        print()  
-#----------------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------------
-#----------------------------------------------------------------------------------------
+    records = mycursor.fetchall()
+    row_no = 0
+    for rows in records:
+        row_no += 1
+        print("******************************", "Hàng số", row_no, "******************************")
+        print("\t             Góp ý: ", rows[0])
+        print("\t      Đánh giá (tối đa 10 điểm): ", rows[1])
+        print()
 
-# User Menu Operations 
+#----------------------------------------------------------------------------------------
+# Chức năng Menu Người dùng
 
 def BookCentre():
     while True:
-        print("\t\t\t Book Centre \n")
+        print("\t\t\t Trung tâm Sách \n")
         print("==============================================================")
-        print("1. List of all Books ")
-        print("2. Issue Book ")
-        print("3. Display Issued Book Records ")
-        print("4. Return Issued Book ")
-        print("5. Return to Main Menu ")
+        print("1. Danh sách tất cả sách")
+        print("2. Mượn sách")
+        print("3. Hiển thị sách đã mượn")
+        print("4. Trả sách đã mượn")
+        print("5. Quay lại Menu chính")
         print("===============================================================")
-        choice=int(input("Enter Choice between 1 to 4-------> : "))
-        if choice==1:
+        choice = int(input("Nhập lựa chọn từ 1 đến 5 -------> : "))
+        if choice == 1:
             Book.BookList()
-        elif choice==2:
+        elif choice == 2:
             Book.IssueBook()
-        elif choice==3:
+        elif choice == 3:
             Book.ShowIssuedBook()
-        elif choice==4:
+        elif choice == 4:
             Book.returnBook()
-        elif choice==5:
+        elif choice == 5:
             return
         else:
-            print("Wrong Choice......Enter Your Choice again")
-            x=input("Press Enter to continue")
+            print("Lựa chọn không hợp lệ......Vui lòng nhập lại lựa chọn của bạn")
+            x = input("Nhấn Enter để tiếp tục")
+
 #----------------------------------------------------------------------------------------
 def Feedback():
     while True:
-        data=()
-        print("\t\t\t Feedback and Rating\n")
+        data = ()
+        print("\t\t\t Góp ý và Đánh giá\n")
         print("==============================================================")
-        Feedback=input("Enter your Review about our Library and tell us how can we improve to make you happy!!:))---->")
-        Ratings=input("Rate us out of 10:")
-        data=(Feedback,Ratings)
-        query="INSERT INTO Feedback VALUES (%s, %s)"
-        mycursor.execute(query,data)
+        Feedback = input("Hãy nhập góp ý của bạn về Thư viện và cho biết chúng tôi có thể cải thiện điều gì để làm bạn hài lòng hơn!! :)) ----> ")
+        Ratings = input("Đánh giá chúng tôi trên thang điểm 10: ")
+        data = (Feedback, Ratings)
+        query = "INSERT INTO Feedback VALUES (%s, %s)"
+        mycursor.execute(query, data)
         mydb.commit()
         print()
-        print("Thank you for your valuable Feedback")
+        print("Cảm ơn bạn vì những góp ý quý giá!")
         return      
+
 #----------------------------------------------------------------------------------------
-mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao",database="Library")
-mycursor=mydb.cursor()
+mydb = pymysql.connect(
+    host="localhost",
+    user="root",
+    passwd="200511",
+    database="Library",
+    charset="utf8mb4",
+    cursorclass=pymysql.cursors.Cursor
+)
+mycursor = mydb.cursor()
+

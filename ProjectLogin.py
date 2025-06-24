@@ -1,131 +1,130 @@
 import sys
 import MainMenu
 import Tables
-import mysql.connector
+import pymysql
+
 #---------------------------------------------------------------------------------------------------------
-def login_to_admin() : # Admin Login
+def login_to_admin():  # Đăng nhập Admin
     print("\n")
-    print("|                       ~~  T  H  E    B  O  O  K    W  O  R  M  ~~                   |")
+    print("|                 ~~  T  H  Ư   V  I  Ệ  N     S  Á  C  H   ~~                    |")
     print()
-    print("                              LOGIN  TO YOUR ACCOUNT                                    \n")
-    print("WARNING : Only three Attempts to login")
-    for attempts in range(0,3) : # Only three Attempts to login then system will switch off 
-        AdminID=input("\t  Enter AdminID : ")   #Original Admins:Kunal1020 -->123, Siddesh510 --> 786 ,Vishal305---> 675
-        password=input("\t  Enter Password : ")
-        
+    print("                ĐĂNG NHẬP TÀI KHOẢN QUẢN TRỊ VIÊN\n")
+    print("CẢNH BÁO: Bạn chỉ có 3 lần thử đăng nhập")
+    for attempts in range(0, 3):
+        AdminID = input("\t  Nhập Mã Quản trị viên: ")
+        password = input("\t  Nhập Mật khẩu: ")
         print()
-        mycursor.execute("SELECT Password from AdminRecord where AdminID={0}".format("\'"+AdminID+"\'"))
-        result=mycursor.fetchone()
+        mycursor.execute("SELECT Password FROM AdminRecord WHERE AdminID={0}".format("'" + AdminID + "'"))
+        result = mycursor.fetchone()
         if result:
-            temp,=result #coverting tuple to integer for comparing password
-            if temp==password: # authenticated usernames and passwords
-                print("\n\t\t    WELCOME {0} to THE BOOK WORM  \n ".format("\'"+AdminID+"\'"))
+            temp, = result
+            if temp == password:
+                print(f"\n\t\t    CHÀO MỪNG {AdminID} ĐẾN VỚI THƯ VIỆN SÁCH\n")
                 MainMenu.Adminmenu()
                 break
-            else :
-                print("\t INVALID PASSWORD OR USERNAME ! TRY AGAIN ")
-                print("\t {0}st attempt is over \n ".format(attempts + 1))
-                continue
-
-        else :
-            print("\t NO SUCH USERNAME ! TRY AGAIN ")
-            print("\t {0}st attempt is over \n ".format(attempts + 1))
-            continue
-
-    else :
-        print("\t Try again later \n ")
-        print("\t System off  \n ")
-        print("*---------------------------------------------------------------------------------* \n")
-#---------------------------------------------------------------------------------------------------------
-def login_to_user(): #User login
-    
-    print("\n")
-    print("|                       ~~  T  H  E    B  O  O  K    W  O  R  M  ~~                   |")
-    print()
-    print("1.CREATE ACCOUNT")
-    print("2.LOGIN TO YOUR ACCOUNT")
-    ch=int(input("Enter choice-->"))
-    if ch==1:
-        data=()
-        UserId=input("Enter your UserId ")
-        UserName=input("Enter your Name ")
-        Password=input("Enter Password to be set:")
-        data=(UserId,UserName, Password,None)
-        query="INSERT INTO UserRecord VALUES (%s, %s,%s,%s)"
-        mycursor.execute(query,data)
-        mydb.commit()
-        mycursor.execute("SELECT UserId from UserRecord where UserId={0}".format("\'"+UserId+"\'"))
-        result=mycursor.fetchone()
-        if result:
-            print("Account successfully created")
+            else:
+                print("\t MẬT KHẨU HOẶC TÊN ĐĂNG NHẬP KHÔNG ĐÚNG! THỬ LẠI.")
+                print(f"\t Đã hết lần thử thứ {attempts + 1}\n")
         else:
-            print("Account already Exists")
+            print("\t KHÔNG TÌM THẤY TÊN ĐĂNG NHẬP! THỬ LẠI.")
+            print(f"\t Đã hết lần thử thứ {attempts + 1}\n")
+    else:
+        print("\t Vui lòng thử lại sau.")
+        print("\t Hệ thống tạm dừng.\n")
+        print("*---------------------------------------------------------------------------------* \n")
+
+#---------------------------------------------------------------------------------------------------------
+def login_to_user():  # Đăng nhập người dùng
+    print("\n")
+    print("|                 ~~  T  H  Ư   V  I  Ệ  N     S  Á  C  H   ~~                    |")
+    print()
+    print("1. TẠO TÀI KHOẢN")
+    print("2. ĐĂNG NHẬP TÀI KHOẢN")
+    ch = int(input("Nhập lựa chọn --> "))
+    if ch == 1:
+        data = ()
+        UserId = input("Nhập Mã người dùng: ")
+        UserName = input("Nhập Tên người dùng: ")
+        Password = input("Nhập Mật khẩu muốn đặt: ")
+        data = (UserId, UserName, Password, None)
+        query = "INSERT INTO UserRecord VALUES (%s, %s, %s, %s)"
+        mycursor.execute(query, data)
+        mydb.commit()
+        mycursor.execute("SELECT UserId FROM UserRecord WHERE UserId={0}".format("'" + UserId + "'"))
+        result = mycursor.fetchone()
+        if result:
+            print("Tài khoản đã được tạo thành công.")
+        else:
+            print("Tài khoản đã tồn tại.")
         login_to_user()
 
-    elif ch==2:
-        print("WARNING : Only three Attempts to login at a time")
-        for attempts in range(0,3) :  # Only three Attempts to login then system will switch off 
-            UserID=input("\t  Enter UserID : ")   # Default Users:Kunal- UserID 101 and Passwd 1234,
-                                                    #Vishal- UserID 102 and Passwd 3050,Siddhesh- UserID 103 and Passwd 5010
-            password=input("\t  Enter Password : ")
+    elif ch == 2:
+        print("CẢNH BÁO: Bạn chỉ có 3 lần thử đăng nhập")
+        for attempts in range(0, 3):
+            UserID = input("\t  Nhập Mã người dùng: ")
+            password = input("\t  Nhập Mật khẩu: ")
             print()
-            mycursor.execute("SELECT Password from UserRecord where UserID={0}".format("\'"+UserID+"\'"))
-            result=mycursor.fetchone()
+            mycursor.execute("SELECT Password FROM UserRecord WHERE UserID={0}".format("'" + UserID + "'"))
+            result = mycursor.fetchone()
             if result:
-                temp,=result #coverting tuple to integer fro comparing password
-                if temp==password: # authenticated usernames and passwords
-                    print("\n\t\t    WELCOME {0} to THE BOOK WORM  \n ".format("\'"+UserID+"\'"))
+                temp, = result
+                if temp == password:
+                    print(f"\n\t\t    CHÀO MỪNG {UserID} ĐẾN VỚI THƯ VIỆN SÁCH\n")
                     MainMenu.Usermenu()
                     break
-                else :
-                    print("\t INVALID PASSWORD OR USERNAME ! TRY AGAIN ")
-                    print("\t {0}st attempt is over \n ".format(attempts + 1))
-                    continue
-
-            else :
-                print("\t NO SUCH USERNAME ! TRY AGAIN ")
-                print("\t {0}st attempt is over \n ".format(attempts + 1))
-                continue
-
-        else :
-            print("\t Try again later \n ")
-            print("\t System off  \n ")
+                else:
+                    print("\t MẬT KHẨU HOẶC TÊN ĐĂNG NHẬP KHÔNG ĐÚNG! THỬ LẠI.")
+                    print(f"\t Đã hết lần thử thứ {attempts + 1}\n")
+            else:
+                print("\t KHÔNG TÌM THẤY TÊN ĐĂNG NHẬP! THỬ LẠI.")
+                print(f"\t Đã hết lần thử thứ {attempts + 1}\n")
+        else:
+            print("\t Vui lòng thử lại sau.")
+            print("\t Hệ thống tạm dừng.\n")
             print("*---------------------------------------------------------------------------------* \n")
     else:
-        print("Enter valid choice")
+        print("Lựa chọn không hợp lệ. Vui lòng thử lại.")
         login_to_user()
-#---------------------------------------------------------------------------------------------------------       
-def menu() :
+
+#---------------------------------------------------------------------------------------------------------
+def menu():
     print("\n\n")
     print("|*************************************************************************************|")
-    print("|                       ~~  T  H  E    B  O  O  K    W  O  R  M  ~~                   |")
+    print("|                 ~~  T  H  Ư   V  I  Ệ  N     S  Á  C  H   ~~                    |")
     print("|*************************************************************************************|")
     print("\n")
-    print("                 ======================= MENU =======================                \n")
-    print(" 1. Login as a ADMIN")
-    print(" 2. Login as a USER")
-    print(" 3. EXIT \n\n ") #exit
+    print("                 =================== MENU CHÍNH ===================\n")
+    print(" 1. Đăng nhập với vai trò QUẢN TRỊ VIÊN")
+    print(" 2. Đăng nhập với vai trò NGƯỜI DÙNG")
+    print(" 3. THOÁT\n")
 
-    while True :
-        ch= input(" Select [ 1/2/3 ] : ")
+    while True:
+        ch = input("Chọn [1/2/3]: ")
         print()
-        if ch== "1" :
+        if ch == "1":
             login_to_admin()
             break
-        elif ch== "2" :
+        elif ch == "2":
             login_to_user()
             break
-        elif ch== "3" :
-            cancel_request = input(" DO YOU WISH TO EXIT... [yes/no ] :  ")
-            if cancel_request in ["yes","Yes","YES"] :
+        elif ch == "3":
+            cancel_request = input(" BẠN CÓ MUỐN THOÁT KHÔNG? [yes/no]: ")
+            if cancel_request.lower() == "yes":
                 sys.exit()
             break
-        else :
-            print(" INVALID COMMAND ")
-            print(" RETRY \n")
-            continue
-#--------------------------------------------------------------------------------------------------------- 
-mydb=mysql.connector.connect(host="127.0.0.1",user="root",passwd="taolao",database="Library")
-mycursor=mydb.cursor()
+        else:
+            print("LỆNH KHÔNG HỢP LỆ.")
+            print("VUI LÒNG THỬ LẠI.\n")
+
+#---------------------------------------------------------------------------------------------------------
+mydb = pymysql.connect(
+    host="localhost",
+    user="root",
+    passwd="200511",
+    database="Library",
+    charset="utf8mb4",
+    cursorclass=pymysql.cursors.Cursor
+)
+mycursor = mydb.cursor()
 
 menu()
