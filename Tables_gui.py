@@ -70,10 +70,10 @@ class TablesApp:
         if not mycursor.fetchone():
             mycursor.execute("""
                 CREATE TABLE Feedback(
-                    Feedback varchar(100) PRIMARY KEY, 
-                    Feedback TEXT,         
+                    FeedbackID INT AUTO_INCREMENT PRIMARY KEY, 
+                    Feedback TEXT,
                     Rating INT,
-                    CONSTRAINT check_rating CHECK (Rating >= 0 AND Rating <= 10) 
+                    CONSTRAINT check_rating CHECK (Rating >= 0 AND Rating <= 10)
                 )
             """)
 

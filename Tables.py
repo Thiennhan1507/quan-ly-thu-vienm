@@ -21,10 +21,10 @@ result = mycursor.fetchone()
 if not result:
     mycursor.execute("""
         CREATE TABLE BookRecord(
-            BookID varchar(10) PRIMARY KEY, 
-            BookName varchar(50), 
-            Author varchar(30), 
-            Publisher varchar(30)
+            BookID VARCHAR(10) PRIMARY KEY,
+            BookName VARCHAR(35),
+            Author VARCHAR(30),
+            Publisher VARCHAR(30)
         )
     """)
 
@@ -34,11 +34,11 @@ result = mycursor.fetchone()
 if not result:
     mycursor.execute("""
         CREATE TABLE UserRecord(
-            UserID varchar(20) PRIMARY KEY, 
-            UserName varchar(30) NOT NULL,
-            Passwd varchar(50) NOT NULL, 
-            BookID varchar(10), 
-            FOREIGN KEY (BookID) REFERENCES BookRecord(BookID) ON DELETE SET NULL ON UPDATE CASCADE
+            UserID VARCHAR(10) PRIMARY KEY,
+            UserName VARCHAR(20),
+            Password VARCHAR(20),
+            BookID VARCHAR(10),
+            FOREIGN KEY (BookID) REFERENCES BookRecord(BookID)
         )
     """)
 
@@ -49,7 +49,7 @@ if not result:
     mycursor.execute("""
         CREATE TABLE AdminRecord(
             AdminID VARCHAR(10) PRIMARY KEY,
-            Password VARCHAR(20)
+            Passwd VARCHAR(20)
         )
     """)
 
@@ -59,9 +59,7 @@ result = mycursor.fetchone()
 if not result:
     mycursor.execute("""
         CREATE TABLE Feedback(
-            Feedback varchar(100) PRIMARY KEY, 
-            Feedback TEXT,         
-            Rating INT,
-            CONSTRAINT check_rating CHECK (Rating >= 0 AND Rating <= 10) 
+            Feedback VARCHAR(100) PRIMARY KEY,
+            Rating VARCHAR(10)
         )
     """)

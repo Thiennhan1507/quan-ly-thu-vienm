@@ -27,20 +27,42 @@ def displayUser():
 # thêm tài khoản người dùng     
 def insertUser():
     while True:
-        data = ()
         print()
-        UserID = input("Nhập mã người dùng: ")
-        UserName = input("Nhập họ và tên người dùng: ")
-        Password = input("Nhập mật khẩu: ")
+        UserID = input("Nhập mã người dùng (ví dụ: FnB1234): ").strip()
+        UserName = input("Nhập họ và tên người dùng: ").strip()
+
+        # Kiểm tra trùng mã người dùng
+        mycursor.execute("SELECT UserID FROM UserRecord WHERE UserID = %s", (UserID,))
+        if mycursor.fetchone():
+            print("Mã người dùng đã tồn tại. Vui lòng thử mã khác.\n")
+            continue  # Quay lại vòng lặp để nhập lại
+
+        # Nhập và xác nhận mật khẩu
+        while True:
+            Password = input("Nhập mật khẩu: ").strip()
+            ConfirmPassword = input("Nhập lại mật khẩu: ").strip()
+            if Password != ConfirmPassword:
+                print("Hai mật khẩu không trùng khớp. Vui lòng nhập lại.\n")
+            elif not Password:
+                print("Mật khẩu không được để trống.\n")
+            else:
+                break
+
+        # Thêm vào CSDL
+        query = "INSERT INTO UserRecord (UserID, UserName, Password, BookID) VALUES (%s, %s, %s, %s)"
         data = (UserID, UserName, Password, None)
-        query = "INSERT INTO UserRecord VALUES (%s, %s, %s, %s)"
-        mycursor.execute(query, data)
-        mydb.commit()
-        print("Thêm người dùng thành công!\n")
-        ch = input("Bạn có muốn thêm người dùng khác không? [Yes/No]: ")
-        if ch.lower() == "no":
+        try:
+            mycursor.execute(query, data)
+            mydb.commit()
+            print("Thêm người dùng thành công!\n")
+        except pymysql.connect.Error as err:
+            print(f"Lỗi CSDL: {err}")
+            continue
+
+        # Hỏi tiếp tục
+        ch = input("Bạn có muốn thêm người dùng khác không? [Yes/No]: ").strip().lower()
+        if ch != "yes":
             break
-    return
 
 #--------------------------------------------------------------------------------------------------------------------------------             
 # xóa người dùng 
@@ -91,12 +113,20 @@ def updateUser():
         print()
         UserID = input("Nhập mã người dùng cần cập nhật: ")
         UserName = input("Nhập tên người dùng mới: ")
-        Password = input("Nhập mật khẩu mới: ")
+        while True:
+            Password = input("Nhập mật khẩu mới: ")
+            ConfirmPassword = input("Nhập lại mật khẩu mới: ")
+            if Password != ConfirmPassword:
+                print("Hai mật khẩu không trùng khớp. Vui lòng nhập lại.\n")
+            else:
+                break # mật khẩu hợp lệ
+
         query = "UPDATE UserRecord SET Username = %s, Password = %s WHERE UserID = %s"
         data = (UserName, Password, UserID)
         mycursor.execute(query, data)
         mydb.commit()
         print("Cập nhật thành công!")
+        
         ch = input("Bạn có muốn cập nhật người dùng khác không? [Yes/No]: ")
         if ch.lower() == "no":
             break
