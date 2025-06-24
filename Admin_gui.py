@@ -2,17 +2,11 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 import pymysql
 import Tables_gui as Tables
+from db_config import get_connection
 
 class AdminApp:
     def __init__(self):
-        self.mydb = pymysql.connect(
-            host="localhost", 
-            user="root", 
-            password="200511", 
-            database="Library", 
-            charset= "utf8mb4", 
-            cursorclass=pymysql.cursors.Cursor
-        )
+        self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
 
     def hien_thi_admin(self):

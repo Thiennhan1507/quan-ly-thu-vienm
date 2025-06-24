@@ -3,6 +3,7 @@ from tkinter import messagebox
 import pymysql
 import MainMenu_gui as MainMenu
 import Tables_gui as Tables
+from db_config import get_connection 
 
 class LibraryLoginApp:
     def __init__(self, root):
@@ -10,14 +11,7 @@ class LibraryLoginApp:
         self.root.title("Thư viện SÁCH - Đăng nhập")
         self.root.geometry("400x300")
 
-        self.mydb = pymysql.connect(
-            host="localhost",
-            user="root",
-            password="200511",
-            database="Library",
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.Cursor
-        )
+        self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
 
         tk.Label(root, text="~~ T  H  Ư   V  I  Ệ  N   S  Á  C  H ~~", font=("Arial", 14, "bold")).pack(pady=10)

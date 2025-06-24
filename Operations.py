@@ -4,6 +4,7 @@ import Admin
 import Tables
 import Bookutils
 import pymysql
+from db_config import get_connection
 
 #----------------------------------------------------------------------------------------
 # Chức năng dành cho Menu Quản trị viên
@@ -157,13 +158,6 @@ def Feedback():
         return      
 
 #----------------------------------------------------------------------------------------
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="200511",
-    database="Library",
-    charset='utf8mb4', 
-    cursorclass=pymysql.cursors.Cursor
-)
+mydb = get_connection()
 mycursor = mydb.cursor()
 

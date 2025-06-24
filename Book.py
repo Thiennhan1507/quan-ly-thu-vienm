@@ -1,5 +1,6 @@
 import pymysql
 import Tables
+from db_config import get_connection
 
 #----------------------------------------------------------------------------------------
 # Quản trị viên thao tác với Sách
@@ -194,13 +195,6 @@ def returnBook():
     input("Nhấn Enter để quay lại menu")
 
 #----------------------------------------------------------------------------------------
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="200511",
-    database="Library",
-    charset='utf8mb4',   # hỗ trợ tốt tiếng Việt
-    cursorclass=pymysql.cursors.Cursor
-)
+mydb = get_connection()
 mycursor = mydb.cursor()
 

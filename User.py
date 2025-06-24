@@ -1,12 +1,13 @@
 import pymysql
 import Tables
+from db_config import get_connection
 
 #--------------------------------------------------------------------------------------------------------------------------------      
 # hiển thị danh sách người dùng 
 def displayUser():
     print()
     print("Danh sách người dùng: \n")
-    mycursor.execute("""SELECT UserRecord.UserID,UserRecord.UserName,UserRecord.Password,BookRecord.BookName,BookRecord.BookID
+    mycursor.execute("""SELECT UserRecord.UserID,UserRecord.UserName,UserRecord.Passwd,BookRecord.BookName,BookRecord.BookID
                         FROM UserRecord
                         LEFT JOIN BookRecord ON UserRecord.BookID=BookRecord.BookID""")
     records = mycursor.fetchall()
@@ -49,7 +50,7 @@ def insertUser():
                 break
 
         # Thêm vào CSDL
-        query = "INSERT INTO UserRecord (UserID, UserName, Password, BookID) VALUES (%s, %s, %s, %s)"
+        query = "INSERT INTO UserRecord (UserID, UserName, Passwd, BookID) VALUES (%s, %s, %s, %s)"
         data = (UserID, UserName, Password, None)
         try:
             mycursor.execute(query, data)
@@ -84,7 +85,7 @@ def searchUser():
     while True:
         print()
         Search = input("Nhập mã người dùng cần tìm: ")
-        mycursor.execute("""SELECT UserID, UserName, Password , BookName, UserRecord.BookID
+        mycursor.execute("""SELECT UserID, UserName, Passwd , BookName, UserRecord.BookID
                             FROM Library.UserRecord 
                             LEFT JOIN Library.BookRecord ON BookRecord.BookID = UserRecord.BookID
                             WHERE UserRecord.UserID = %s""", (Search,))
@@ -121,7 +122,7 @@ def updateUser():
             else:
                 break # mật khẩu hợp lệ
 
-        query = "UPDATE UserRecord SET Username = %s, Password = %s WHERE UserID = %s"
+        query = "UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s"
         data = (UserName, Password, UserID)
         mycursor.execute(query, data)
         mydb.commit()
@@ -132,10 +133,5 @@ def updateUser():
             break
     return    
 #--------------------------------------------------------------------------------------------------------------------------------     
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    passwd="200511",
-    database="Library"
-)
+mydb = get_connection()
 mycursor = mydb.cursor()

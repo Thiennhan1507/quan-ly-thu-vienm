@@ -1,14 +1,8 @@
 import pymysql
+from db_config import get_connection
 
 # Kết nối đến MySQL
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    passwd="200511",
-    database="Library",
-    charset="utf8mb4",
-    cursorclass=pymysql.cursors.Cursor
-)
+mydb = get_connection()
 mycursor = mydb.cursor()
 
 # Tạo cơ sở dữ liệu "Library" nếu chưa tồn tại
@@ -59,7 +53,8 @@ result = mycursor.fetchone()
 if not result:
     mycursor.execute("""
         CREATE TABLE Feedback(
-            Feedback VARCHAR(100) PRIMARY KEY,
-            Rating VARCHAR(10)
+            FeedbackID INT AUTO_INCREMENT PRIMARY KEY,
+            Feedback TEXT,
+            Rating INT CHECK (Rating BETWEEN 0 AND 10)
         )
     """)

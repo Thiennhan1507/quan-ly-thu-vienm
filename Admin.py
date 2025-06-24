@@ -1,6 +1,7 @@
 import pymysql
 import Tables
-
+from db_config import get_connection
+mydb = get_connection()
 #---------------------------------------------------------------------------------------------------------
 # hiển thị danh sách quản trị viên 
 def displayAdmin():
@@ -123,12 +124,5 @@ def updateAdmin():
     return
 
 #---------------------------------------------------------------------------------------------------------
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    passwd="200511",
-    database="Library",
-    charset="utf8mb4",
-    cursorclass=pymysql.cursors.Cursor
-)
+mydb = get_connection()
 mycursor = mydb.cursor()

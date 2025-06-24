@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import pymysql
+from db_config import get_connection
 
 class TablesApp:
     def __init__(self):
@@ -16,14 +17,7 @@ class TablesApp:
         root.mainloop()
 
     def create_tables(self):
-        mydb = pymysql.connect(
-            host="localhost",
-            user="root",
-            password="200511",
-            database="Library",
-            charset='utf8mb4',   
-            cursorclass=pymysql.cursors.Cursor
-        )
+        mydb = get_connection()
         mycursor = mydb.cursor()
 
 

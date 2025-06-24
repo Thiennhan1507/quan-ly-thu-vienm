@@ -5,6 +5,7 @@ import Book_gui as Book
 import User_gui as User   
 import Admin_gui as Admin  
 import Tables_gui as Tables
+from db_config import get_connection
 
 class OperationsApp:
     def __init__(self, root, menu_type):
@@ -14,14 +15,7 @@ class OperationsApp:
         self.menu_type = menu_type
 
         # Kết nối DB
-        self.mydb = pymysql.connect(
-            host="localhost",
-            user="root",
-            passwd="200511",
-            database="Library",
-            charset="utf8mb4",
-            cursorclass=pymysql.cursors.Cursor
-        )
+        self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
 
         # Khởi tạo các app liên quan

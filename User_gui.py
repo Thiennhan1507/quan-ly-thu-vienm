@@ -1,17 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import pymysql
+from db_config import get_connection
 
 class UserApp:
     def __init__(self):
-        self.mydb = pymysql.connect(
-            host="localhost",
-            user="root",
-            password="200511",
-            database="Library",
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.Cursor
-        )
+        self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
 
     def displayUser(self):
@@ -19,13 +13,13 @@ class UserApp:
         win.title("Hiển thị danh sách người dùng")
         win.geometry("650x400")
 
-        tree = ttk.Treeview(win, columns=("UserID", "UserName", "Password", "BookName", "BookID"), show="headings")
+        tree = ttk.Treeview(win, columns=("UserID", "UserName", "Passwd", "BookName", "BookID"), show="headings")
         for col, name in zip(tree["columns"], ["Mã người dùng", "Tên người dùng", "Mật khẩu", "Sách đang mượn", "Mã sách"]):
             tree.heading(col, text=name)
         tree.pack(fill="both", expand=True)
 
         self.mycursor.execute("""
-            SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Password,
+            SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Passwd,
                    BookRecord.BookName, BookRecord.BookID
             FROM UserRecord LEFT JOIN BookRecord ON UserRecord.BookID = BookRecord.BookID
         """)
@@ -77,7 +71,7 @@ class UserApp:
                 return
 
             self.mycursor.execute(
-                "INSERT INTO UserRecord (UserID, UserName, Password, BookID) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO UserRecord (UserID, UserName, Passwd, BookID) VALUES (%s, %s, %s, %s)",
                 (user_id, user_name, password, None)
             )
             self.mydb.commit()
@@ -126,7 +120,7 @@ class UserApp:
             user_id = user_id_entry.get().strip()
             if user_id:
                 self.mycursor.execute("""
-                    SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Password,
+                    SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Passwd,
                            BookRecord.BookName, UserRecord.BookID
                     FROM UserRecord LEFT JOIN BookRecord ON UserRecord.BookID = BookRecord.BookID
                     WHERE UserRecord.UserID = %s
@@ -188,7 +182,7 @@ class UserApp:
                 messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
                 return
 
-            query = "UPDATE UserRecord SET UserName = %s, Password = %s WHERE UserID = %s"
+            query = "UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s"
             self.mycursor.execute(query, (user_name, password, user_id))
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Đã cập nhật thông tin người dùng.")

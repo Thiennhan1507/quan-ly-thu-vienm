@@ -2,6 +2,7 @@ import sys
 import MainMenu
 import Tables
 import pymysql
+from db_config import get_connection 
 
 #---------------------------------------------------------------------------------------------------------
 def login_to_admin():  # Đăng nhập Admin
@@ -126,14 +127,7 @@ def menu():
             print("VUI LÒNG THỬ LẠI.\n")
 
 #---------------------------------------------------------------------------------------------------------
-mydb = pymysql.connect(
-    host="localhost",
-    user="root",
-    passwd="200511",
-    database="Library",
-    charset="utf8mb4",
-    cursorclass=pymysql.cursors.Cursor
-)
+mydb = get_connection()
 mycursor = mydb.cursor()
 
 
