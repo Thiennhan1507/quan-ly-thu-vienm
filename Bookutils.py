@@ -1,51 +1,158 @@
-import mysql.connector
+import tkinter as tk
+from tkinter import messagebox, ttk
+import pymysql
+import Book_gui as Book  
+import User_gui as User   
+import Admin_gui as Admin  
+import Tables_gui as Tables
 
-mydb = mysql.connector.connect(host="127.0.0.1", user="root", passwd="taolao", database="Library")
-mycursor = mydb.cursor()
+class OperationsApp:
+    def __init__(self, root, menu_type):
+        self.root = root
+        self.root.title(f"Hệ thống Thư viện - {menu_type}")
+        self.root.geometry("400x400")
+        self.menu_type = menu_type
 
-def searchBookByNameOrAuthor():
-    while True:
-        print("\nSEARCH BOOKS")
-        print("1. By Book Name")
-        print("2. By Author Name")
-        print("3. Return to Previous Menu")
-        choice = input("Enter your choice: ")
-        if choice == "1":
-            name = input("Enter book name: ")
-            query = "SELECT * FROM BookRecord WHERE BookName LIKE %s"
-            mycursor.execute(query, ("%" + name + "%",))
-        elif choice == "2":
-            author = input("Enter author name: ")
-            query = "SELECT * FROM BookRecord WHERE Author LIKE %s"
-            mycursor.execute(query, ("%" + author + "%",))
-        elif choice == "3":
-            break
-        else:
-            print("Invalid choice. Please try again.")
-            continue
+        # Kết nối DB
+        self.mydb = pymysql.connect(
+            host="localhost",
+            user="root",
+            passwd="200511",
+            database="Library",
+            charset="utf8mb4",
+            cursorclass=pymysql.cursors.Cursor
+        )
+        self.mycursor = self.mydb.cursor()
 
-        results = mycursor.fetchall()
-        if results:
-            for row in results:
-                print("\n==============================")
-                print("Book ID    :", row[0])
-                print("Book Name  :", row[1])
-                print("Author     :", row[2])
-                print("Publisher  :", row[3])
-        else:
-            print("No books found matching your search.")
+        # Khởi tạo các app liên quan
+        self.book_app = Book.BookApp()
+        self.user_app = User.UserApp()
+        self.admin_app = Admin.AdminApp()
 
-def bookStatistics():
-    print("\nBOOK STATISTICS")
+        # Điều hướng theo loại menu
+        if menu_type == "Quản lý sách":
+            self.book_management()
+        elif menu_type == "Quản lý người dùng":
+            self.user_management()
+        elif menu_type == "Quản lý quản trị viên":
+            self.admin_management()
+        elif menu_type == "Bảng phản hồi":
+            self.feedback_table()
+        elif menu_type == "Trung tâm sách":
+            self.book_centre()
+        elif menu_type == "Góp ý và đánh giá":
+            self.feedback()
 
-    mycursor.execute("SELECT COUNT(*) FROM BookRecord")
-    total_books = mycursor.fetchone()[0]
+    def book_management(self):
+        tk.Label(self.root, text="Quản lý Sách", font=("Arial", 16)).pack(pady=20)
+        
+        tk.Button(self.root, text="Thêm sách", command=self.book_app.insertBook).pack(pady=10)
+        tk.Button(self.root, text="Hiển thị sách", command=self.book_app.displayBook).pack(pady=10)
+        tk.Button(self.root, text="Tìm kiếm sách", command=self.book_app.searchBook).pack(pady=10)
+        tk.Button(self.root, text="Xóa sách", command=self.book_app.deleteBook).pack(pady=10)
+        tk.Button(self.root, text="Cập nhật sách", command=self.book_app.updateBook).pack(pady=10)
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
-    mycursor.execute("SELECT COUNT(BookID) FROM UserRecord WHERE BookID IS NOT NULL")
-    borrowed_books = mycursor.fetchone()[0]
+    def user_management(self):
+        tk.Label(self.root, text="Quản lý Người dùng", font=("Arial", 16)).pack(pady=20)
+        
+        tk.Button(self.root, text="Thêm người dùng", command=self.user_app.insertUser).pack(pady=10)
+        tk.Button(self.root, text="Hiển thị người dùng", command=self.user_app.displayUser).pack(pady=10)
+        tk.Button(self.root, text="Tìm kiếm người dùng", command=self.user_app.searchUser).pack(pady=10)
+        tk.Button(self.root, text="Xóa người dùng", command=self.user_app.deleteUser).pack(pady=10)
+        tk.Button(self.root, text="Cập nhật người dùng", command=self.user_app.updateUser).pack(pady=10)
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
-    available_books = total_books - borrowed_books
+    def admin_management(self):
+        tk.Label(self.root, text="Quản lý Quản trị viên", font=("Arial", 16)).pack(pady=20)
+        
+        tk.Button(self.root, text="Thêm quản trị viên", command=self.admin_app.insertAdmin).pack(pady=10)
+        tk.Button(self.root, text="Hiển thị quản trị viên", command=self.admin_app.displayAdmin).pack(pady=10)
+        tk.Button(self.root, text="Tìm kiếm quản trị viên", command=self.admin_app.searchAdmin).pack(pady=10)
+        tk.Button(self.root, text="Xóa quản trị viên", command=self.admin_app.deleteAdmin).pack(pady=10)
+        tk.Button(self.root, text="Cập nhật quản trị viên", command=self.admin_app.updateAdmin).pack(pady=10)
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
-    print(f"Total books       : {total_books}")
-    print(f"Borrowed books    : {borrowed_books}")
-    print(f"Available books   : {available_books}")
+    def feedback_table(self):
+        tk.Label(self.root, text="Bảng Góp ý và Đánh giá", font=("Arial", 16)).pack(pady=20)
+        
+        tree = ttk.Treeview(self.root, columns=("Feedback", "Rating"), show="headings")
+        tree.heading("Feedback", text="Nội dung góp ý")
+        tree.heading("Rating", text="Đánh giá")
+        tree.pack(fill="both", expand=True)
+
+        self.mycursor.execute("SELECT * FROM Feedback")
+        records = self.mycursor.fetchall()
+        for row in records:
+            tree.insert("", "end", values=row)
+
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
+
+    def book_centre(self):
+        tk.Label(self.root, text="Trung tâm Sách", font=("Arial", 16)).pack(pady=20)
+        
+        tk.Button(self.root, text="Danh sách tất cả sách", command=self.book_app.BookList).pack(pady=10)
+        tk.Button(self.root, text="Mượn sách", command=self.book_app.IssueBook).pack(pady=10)
+        tk.Button(self.root, text="Hiển thị sách đã mượn", command=self.book_app.ShowIssuedBook).pack(pady=10)
+        tk.Button(self.root, text="Trả sách", command=self.book_app.returnBook).pack(pady=10)
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
+
+    def feedback(self):
+        feedback_win = tk.Toplevel(self.root)
+        feedback_win.title("Góp ý và Đánh giá")
+        feedback_win.geometry("400x300")
+
+        tk.Label(feedback_win, text="Đánh giá và Góp ý", font=("Arial", 14)).pack(pady=10)
+        
+        tk.Label(feedback_win, text="Nội dung góp ý:").pack()
+        feedback_entry = tk.Text(feedback_win, height=5, width=30)
+        feedback_entry.pack()
+
+        tk.Label(feedback_win, text="Đánh giá (1-10):").pack()
+        rating_entry = tk.Entry(feedback_win)
+        rating_entry.pack()
+
+        def submit_feedback():
+            feedback = feedback_entry.get("1.0", tk.END).strip()
+            rating = rating_entry.get()
+            if feedback and rating:
+                query = "INSERT INTO Feedback (Feedback, Rating) VALUES (%s, %s)"
+                self.mycursor.execute(query, (feedback, rating))
+                self.mydb.commit()
+                messagebox.showinfo("Thành công", "Cảm ơn bạn đã góp ý!")
+                feedback_win.destroy()
+            else:
+                messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ thông tin!")
+
+        tk.Button(feedback_win, text="Gửi góp ý", command=submit_feedback).pack(pady=10)
+
+# ======= Hàm khởi động các màn =======
+def BookManagement():
+    root = tk.Tk()
+    OperationsApp(root, "Quản lý sách")
+    root.mainloop()
+
+def UserManagement():
+    root = tk.Tk()
+    OperationsApp(root, "Quản lý người dùng")
+    root.mainloop()
+
+def AdminManagement():
+    root = tk.Tk()
+    OperationsApp(root, "Quản lý quản trị viên")
+    root.mainloop()
+
+def FeedbackTable():
+    root = tk.Tk()
+    OperationsApp(root, "Bảng phản hồi")
+    root.mainloop()
+
+def BookCentre():
+    root = tk.Tk()
+    OperationsApp(root, "Trung tâm sách")
+    root.mainloop()
+
+def Feedback():
+    root = tk.Tk()
+    OperationsApp(root, "Góp ý và đánh giá")
+    root.mainloop()
