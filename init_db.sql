@@ -5,47 +5,33 @@ USE Library;
 -- Tạo bảng BookRecord
 CREATE TABLE IF NOT EXISTS BookRecord (
     BookID VARCHAR(10) PRIMARY KEY,
-    BookName VARCHAR(35),
+    BookName VARCHAR(50),
     Author VARCHAR(30),
     Publisher VARCHAR(30)
 );
 
 -- Tạo bảng UserRecord
 CREATE TABLE IF NOT EXISTS UserRecord (
-    UserID VARCHAR(10) PRIMARY KEY,
-    UserName VARCHAR(20),
-    Password VARCHAR(20),
+    UserID VARCHAR(20) PRIMARY KEY,
+    UserName VARCHAR(30) NOT NULL,
+    Passwd VARCHAR(50) NOT NULL,
+    Fullname VARCHAR(50) NOT NULL,
     BookID VARCHAR(10),
-    FOREIGN KEY (BookID) REFERENCES BookRecord(BookID)
+    FOREIGN KEY (BookID) REFERENCES BookRecord(BookID) ON DELETE SET NULL ON UPDATE CASCADE -- thêm ràng buộc ON DELETE SET NULL trong khóa ngoại để tránh lỗi khi xóa sách
 );
-
--- Chèn dữ liệu mẫu vào UserRecord
-INSERT INTO UserRecord (UserID, UserName, Password, BookID) VALUES
-    ('101', 'Kunal', '1234', NULL),
-    ('102', 'Vishal', '3050', NULL),
-    ('103', 'Siddhesh', '5010', NULL);
 
 -- Tạo bảng AdminRecord
 CREATE TABLE IF NOT EXISTS AdminRecord (
-    AdminID VARCHAR(10) PRIMARY KEY,
-    Password VARCHAR(20)
+    AdminID VARCHAR(20) PRIMARY KEY,
+    Passwd  VARCHAR(50)
 );
-
--- Chèn dữ liệu mẫu vào AdminRecord
-INSERT INTO AdminRecord (AdminID, Password) VALUES
-    ('Kunal1020', '123'),
-    ('Siddesh510', '786'),
-    ('Vishal305', '675');
 
 -- Tạo bảng Feedback
 CREATE TABLE IF NOT EXISTS Feedback (
-    Feedback VARCHAR(100) PRIMARY KEY,
-    Rating VARCHAR(10)
+	FeedbackID INT AUTO_INCREMENT PRIMARY KEY,
+    Feedback TEXT,
+    Rating INT,
+    CONSTRAINT check_rating CHECK (Rating >= 0 AND Rating <= 10) 
 );
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') NOT NULL DEFAULT 'user'
-);
+
