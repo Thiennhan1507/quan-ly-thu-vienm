@@ -41,18 +41,34 @@ class AdminApp:
         password_entry = tk.Entry(win, show="*")
         password_entry.pack()
 
+        tk.Label(win, text="Nhập lại mật khẩu:").pack()
+        confirm_entry = tk.Entry(win, show="*")
+        confirm_entry.pack()
+
         def add_admin():
-            admin_id = admin_id_entry.get()
-            password = password_entry.get()
-            if admin_id and password:
-                query = "INSERT INTO AdminRecord VALUES (%s, %s)"
-                self.mycursor.execute(query, (admin_id, password))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Thêm quản trị viên thành công.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn thêm quản trị viên khác không?"):
-                    win.destroy()
-            else:
+            admin_id = admin_id_entry.get().strip()
+            password = password_entry.get().strip()
+            confirm = confirm_entry.get().strip()
+
+            if not admin_id or not password or not confirm:
                 messagebox.showerror("Lỗi", "Vui lòng nhập đầy đủ thông tin.")
+                return
+
+            if password != confirm:
+                messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
+                return
+
+            self.mycursor.execute("SELECT AdminID FROM AdminRecord WHERE AdminID = %s", (admin_id,))
+            if self.mycursor.fetchone():
+                messagebox.showerror("Lỗi", "Tài khoản đã tồn tại.")
+                return
+
+            query = "INSERT INTO AdminRecord VALUES (%s, %s)"
+            self.mycursor.execute(query, (admin_id, password))
+            self.mydb.commit()
+            messagebox.showinfo("Thành công", "Thêm quản trị viên thành công.")
+            if not messagebox.askyesno("Tiếp tục", "Bạn có muốn thêm quản trị viên khác không?"):
+                win.destroy()
 
         tk.Button(win, text="Thêm", command=add_admin).pack(pady=10)
 
@@ -132,7 +148,6 @@ class AdminApp:
         confirm_pass_entry = tk.Entry(win, show="*")
         confirm_pass_entry.pack()
 
-
         def update_admin():
             admin_id = admin_id_entry.get()
             password = password_entry.get()
@@ -145,10 +160,15 @@ class AdminApp:
             if password != confirm_pass:
                 messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
                 return
-
+            
+            self.mycursor.execute("SELECT * FROM AdminRecord WHERE AdminID = %s", (admin_id,))
+            if not self.mycursor.fetchone():
+                messagebox.showerror("Lỗi", "Tài khoản không tồn tại.")
+                return
             query = "UPDATE AdminRecord SET Password=%s WHERE AdminID=%s"
             self.mycursor.execute(query, (password, admin_id))
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Cập nhật mật khẩu thành công.")
             if not messagebox.askyesno("Tiếp tục", "Bạn có muốn cập nhật tài khoản khác không?"):
                 win.destroy()
+        tk.Button(win, text="Cập nhật", command=update_admin).pack(pady=10)

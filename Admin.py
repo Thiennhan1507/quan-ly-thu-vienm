@@ -44,7 +44,7 @@ def insertAdmin():
             else:
                 break
 
-        mycursor.execute("INSERT INTO AdminRecord (AdminID, Password) VALUES (%s, %s)", (AdminID, Password))
+        mycursor.execute("INSERT INTO AdminRecord (AdminID, Passwd) VALUES (%s, %s)", (AdminID, Password))
         mydb.commit()
         print("Thêm Quản trị viên thành công.\n")
 
