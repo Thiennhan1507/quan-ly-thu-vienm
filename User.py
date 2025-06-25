@@ -26,14 +26,14 @@ class UserApp:
 
             self.mycursor.execute("SELECT UserID FROM UserRecord WHERE UserID = %s", (UserID,))
             if self.mycursor.fetchone():
-                print("❌ Mã người dùng đã tồn tại.")
+                print("Mã người dùng đã tồn tại.")
                 continue
 
             while True:
                 Password = input("Nhập mật khẩu: ").strip()
                 Confirm = input("Nhập lại mật khẩu: ").strip()
                 if Password != Confirm:
-                    print("❌ Mật khẩu không khớp.")
+                    print("Mật khẩu không khớp.")
                 else:
                     break
 
@@ -43,7 +43,7 @@ class UserApp:
                     (UserID, UserName, Password)
                 )
                 self.mydb.commit()
-                print("✅ Đã thêm người dùng.")
+                print("Đã thêm người dùng.")
             except pymysql.MySQLError as e:
                 print(f"Lỗi khi thêm người dùng: {e}")
 
@@ -55,11 +55,11 @@ class UserApp:
             UserID = input("\nNhập mã người dùng cần xóa: ").strip()
             self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
             if not self.mycursor.fetchone():
-                print("❌ Người dùng không tồn tại.")
+                print("Người dùng không tồn tại.")
             else:
                 self.mycursor.execute("DELETE FROM UserRecord WHERE UserID = %s", (UserID,))
                 self.mydb.commit()
-                print("✅ Đã xóa người dùng.")
+                print("Đã xóa người dùng.")
 
             if input("Xóa người dùng khác? [yes/no]: ").strip().lower() != "yes":
                 break
@@ -75,7 +75,7 @@ class UserApp:
                 print("Tên người dùng:", record[1])
                 print("Mật khẩu:", record[2])
             else:
-                print("❌ Không tìm thấy người dùng.")
+                print("Không tìm thấy người dùng.")
 
             if input("Tìm người dùng khác? [yes/no]: ").strip().lower() != "yes":
                 break
@@ -85,7 +85,7 @@ class UserApp:
             UserID = input("\nNhập mã người dùng cần cập nhật: ").strip()
             self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
             if not self.mycursor.fetchone():
-                print("❌ Người dùng không tồn tại.")
+                print("Người dùng không tồn tại.")
                 continue
 
             UserName = input("Nhập tên mới: ").strip()
@@ -93,7 +93,7 @@ class UserApp:
                 Password = input("Nhập mật khẩu mới: ").strip()
                 Confirm = input("Nhập lại mật khẩu: ").strip()
                 if Password != Confirm:
-                    print("❌ Mật khẩu không khớp.")
+                    print("Mật khẩu không khớp.")
                 else:
                     break
 
@@ -102,7 +102,7 @@ class UserApp:
                 (UserName, Password, UserID)
             )
             self.mydb.commit()
-            print("✅ Cập nhật thành công.")
+            print("Cập nhật thành công.")
 
             if input("Cập nhật người dùng khác? [yes/no]: ").strip().lower() != "yes":
                 break

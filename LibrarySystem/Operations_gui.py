@@ -3,12 +3,10 @@ from tkinter import messagebox, ttk
 import Book_gui as Book  
 import User_gui as User   
 import Admin_gui as Admin  
-import Tables_gui as Tables
 from db_config import get_connection
-from library import get_unreturned_books
 
 class OperationsApp:
-    def __init__(self, root, menu_type):
+    def __init__(self, root: tk.Tk, menu_type: str):
         self.root = root
         self.root.title(f"Hệ thống Thư viện - {menu_type}")
         self.root.geometry("400x400")
@@ -19,7 +17,7 @@ class OperationsApp:
         self.mycursor = self.mydb.cursor()
 
         # Khởi tạo các app liên quan
-        self.book_app = Book.BookApp()
+        self.book_app = Book.BookApp(self.root)
         self.user_app = User.UserApp()
         self.admin_app = Admin.AdminApp()
 
@@ -85,10 +83,11 @@ class OperationsApp:
     def book_centre(self):
         tk.Label(self.root, text="Trung tâm Sách", font=("Arial", 16)).pack(pady=20)
         
-        tk.Button(self.root, text="Danh sách tất cả sách", command=self.book_app.BookList).pack(pady=10)
-        tk.Button(self.root, text="Mượn sách", command=self.book_app.IssueBook).pack(pady=10)
-        tk.Button(self.root, text="Hiển thị sách đã mượn", command=self.book_app.ShowIssuedBook).pack(pady=10)
-        tk.Button(self.root, text="Trả sách", command=self.book_app.returnBook).pack(pady=10)
+        self.book_app.show_borrow_return_ui()
+        tk.Button(self.root, text="Danh sách tất cả sách", command=self.book_app.displayBook).pack(pady=10)
+
+        tk.Button(self.root, text="Hiển thị sách đang mượn", command=self.book_app.display_borrowed_books).pack(pady=10)
+
         tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def feedback(self):

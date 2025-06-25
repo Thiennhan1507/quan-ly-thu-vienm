@@ -8,11 +8,13 @@ cursor = conn.cursor()
 
 class BookApp:
     def __init__(self, root):
+        self.root = root
         self.mydb = get_connection()
         self.mycursor = self.mydb.cursor()
 
+    def show_borrow_return_ui(self):
         # Tạo giao diện chính để đặt các nút mượn và trả sách
-        frame = tk.Frame(root)
+        frame = tk.Frame(self.root)
         frame.pack(pady=20)
         
         # Nút mượn sách → mở form mượn sách
@@ -318,6 +320,34 @@ class BookApp:
             JOIN BookRecord b ON t.book_id = b.BookID
             JOIN UserRecord u ON t.user_id = u.UserID
             WHERE t.status = 'overdue'
+            """)
+        records = self.mycursor.fetchall()
+
+        for row in records:
+            tree.insert("", "end", values=row)
+
+        tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
+
+    def display_borrowed_books(self):
+        win = tk.Toplevel()
+        win.title("Danh sách sách đang được mượn")
+        win.geometry("700x400")
+
+        tree = ttk.Treeview(win, columns=("BookName", "UserID", "UserName", "BorrowDate", "DueDate", "Status"), show="headings")
+        tree.heading("BookName", text="Tên sách")
+        tree.heading("UserID", text="Mã người mượn")
+        tree.heading("UserName", text="Họ tên người mượn")
+        tree.heading("BorrowDate", text="Ngày mượn")
+        tree.heading("DueDate", text="Hạn trả")
+        tree.heading("Status", text="Trạng thái")
+        tree.pack(fill="both", expand=True)
+
+        self.mycursor.execute("""
+            SELECT b.BookName, u.UserID, u.UserName, t.borrow_date, t.due_date, t.status
+            FROM transactions t
+            JOIN BookRecord b ON t.book_id = b.BookID
+            JOIN UserRecord u ON t.user_id = u.UserID
+            WHERE t.status = 'borrowed'
             """)
         records = self.mycursor.fetchall()
 
