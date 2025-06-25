@@ -4,7 +4,7 @@ import Book_gui as Book
 import User_gui as User   
 import Admin_gui as Admin  
 from db_config import get_connection
-
+import library 
 class OperationsApp:
     def __init__(self, root: tk.Tk, menu_type: str):
         self.root = root
