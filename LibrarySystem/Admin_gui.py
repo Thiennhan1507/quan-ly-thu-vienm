@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 import pymysql
-import Tables_gui as Tables
 from db_config import get_connection
 
 class AdminApp:
@@ -14,9 +13,9 @@ class AdminApp:
         win.title("Hiển thị thông tin Quản trị viên")
         win.geometry("400x400")
 
-        tree = ttk.Treeview(win, columns=("AdminID", "Password"), show="headings")
+        tree = ttk.Treeview(win, columns=("AdminID", "Passwd"), show="headings")
         tree.heading("AdminID", text="Tên đăng nhập")
-        tree.heading("Password", text="Mật khẩu")
+        tree.heading("Passwd", text="Mật khẩu")
         tree.pack(fill="both", expand=True)
 
         self.mycursor.execute("SELECT * FROM AdminRecord")
@@ -165,7 +164,7 @@ class AdminApp:
             if not self.mycursor.fetchone():
                 messagebox.showerror("Lỗi", "Tài khoản không tồn tại.")
                 return
-            query = "UPDATE AdminRecord SET Password=%s WHERE AdminID=%s"
+            query = "UPDATE AdminRecord SET Passwd=%s WHERE AdminID=%s"
             self.mycursor.execute(query, (password, admin_id))
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Cập nhật mật khẩu thành công.")

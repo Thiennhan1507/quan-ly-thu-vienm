@@ -114,7 +114,7 @@ def updateAdmin():
             else:
                 break
 
-        mycursor.execute("UPDATE AdminRecord SET Password = %s WHERE AdminID = %s", (NewPassword, AdminID))
+        mycursor.execute("UPDATE AdminRecord SET Passwd = %s WHERE AdminID = %s", (NewPassword, AdminID))
         mydb.commit()
         print("Cập nhật mật khẩu thành công.\n")
 
