@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-import Tables_gui as Tables
 from db_config import get_connection
 from datetime import datetime, timedelta
 

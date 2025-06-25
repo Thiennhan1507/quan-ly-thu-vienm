@@ -1,7 +1,7 @@
-import pymysql
-import Tables
 from db_config import get_connection
+
 mydb = get_connection()
+mycursor = mydb.cursor()
 #---------------------------------------------------------------------------------------------------------
 # hiển thị danh sách quản trị viên 
 def displayAdmin():
@@ -122,7 +122,3 @@ def updateAdmin():
         if ch != "yes":
             break
     return
-
-#---------------------------------------------------------------------------------------------------------
-mydb = get_connection()
-mycursor = mydb.cursor()

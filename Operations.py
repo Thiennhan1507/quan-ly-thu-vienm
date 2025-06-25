@@ -1,9 +1,6 @@
 import Book
 import User
 import Admin
-import Tables
-import Bookutils
-import pymysql
 from db_config import get_connection
 
 #----------------------------------------------------------------------------------------

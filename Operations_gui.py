@@ -60,12 +60,12 @@ class OperationsApp:
     def admin_management(self):
         tk.Label(self.root, text="Quản lý Quản trị viên", font=("Arial", 16)).pack(pady=20)
         
-        tk.Button(self.root, text="Thêm quản trị viên", command=self.admin_app.insertAdmin).pack(pady=10)
-        tk.Button(self.root, text="Hiển thị quản trị viên", command=self.admin_app.displayAdmin).pack(pady=10)
-        tk.Button(self.root, text="Tìm kiếm quản trị viên", command=self.admin_app.searchAdmin).pack(pady=10)
-        tk.Button(self.root, text="Xóa quản trị viên", command=self.admin_app.deleteAdmin).pack(pady=10)
-        tk.Button(self.root, text="Cập nhật quản trị viên", command=self.admin_app.updateAdmin).pack(pady=10)
-        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
+        tk.Button(self.root, text="Thêm quản trị viên", command=self.admin_app.them_admin).pack(pady=10)
+        tk.Button(self.root, text="Hiển thị quản trị viên", command=self.admin_app.hien_thi_admin).pack(pady=10)
+        tk.Button(self.root, text="Tìm kiếm quản trị viên", command=self.admin_app.tim_kiem_admin).pack(pady=10)
+        tk.Button(self.root, text="Xóa quản trị viên", command=self.admin_app.xoa_admin).pack(pady=10)
+        tk.Button(self.root, text="Cập nhật quản trị viên", command=self.admin_app.cap_nhat_admin).pack(pady=10)
+
 
     def feedback_table(self):
         tk.Label(self.root, text="Bảng Góp ý và Đánh giá", font=("Arial", 16)).pack(pady=20)
