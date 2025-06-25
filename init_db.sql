@@ -34,4 +34,16 @@ CREATE TABLE IF NOT EXISTS Feedback (
     CONSTRAINT check_rating CHECK (Rating >= 0 AND Rating <= 10) 
 );
 
+-- bảng giao dịch mượn/trả
+CREATE TABLE IF NOT EXISTS transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id VARCHAR(20) NOT NULL,
+    book_id VARCHAR(10) NOT NULL,
+    borrow_date DATE,
+    due_date DATE,
+    return_date DATE,
+    status ENUM('borrowed', 'returned', 'overdue'),
+    FOREIGN KEY (book_id) REFERENCES BookRecord(BookID) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES UserRecord(UserID) ON DELETE CASCADE
+);
 
