@@ -13,7 +13,7 @@ def login_admin():
         admin_id = input("Nhập Mã Quản trị viên: ").strip()
         password = input("Nhập Mật khẩu: ").strip()
 
-        mycursor.execute("SELECT Password FROM AdminRecord WHERE AdminID = %s", (admin_id,))
+        mycursor.execute("SELECT Passwd FROM AdminRecord WHERE AdminID = %s", (admin_id,))
         result = mycursor.fetchone()
 
         if result and result[0] == password:
