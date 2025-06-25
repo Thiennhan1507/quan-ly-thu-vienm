@@ -1,143 +1,108 @@
 import pymysql
 from db_config import get_connection
 
-# Kết nối CSDL
-mydb = get_connection()
-mycursor = mydb.cursor()
+class UserApp:
+    def __init__(self):
+        self.mydb = get_connection()
+        self.mycursor = self.mydb.cursor()
 
-#--------------------------------------------------------------------------------------------------------------------------------      
-# hiển thị danh sách người dùng 
-def displayUser():
-    print()
-    print("Danh sách người dùng: \n")
-    mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord")
-    records = mycursor.fetchall()
-    row_no = 0
-    for rows in records:
-        row_no += 1
-        print("******************************", "Người dùng số", row_no, "******************************")
-        print("\t   Mã người dùng: ", rows[0])
-        print("\t     Họ và tên: ", rows[1])
-        print("\t       Mật khẩu: ", rows[2])
-        print()
-    input("Nhấn phím bất kỳ để quay lại menu...")
-
-#--------------------------------------------------------------------------------------------------------------------------------         
-# thêm tài khoản người dùng     
-def insertUser():
-    while True:
-        print()
-        UserID = input("Nhập mã người dùng (ví dụ: FnB1234): ").strip()
-        UserName = input("Nhập họ và tên người dùng: ").strip()
-
-        # Kiểm tra trùng mã người dùng
-        mycursor.execute("SELECT UserID FROM UserRecord WHERE UserID = %s", (UserID,))
-        if mycursor.fetchone():
-            print("Mã người dùng đã tồn tại. Vui lòng thử mã khác.\n")
-            continue
-
-        # Nhập và xác nhận mật khẩu
-        while True:
-            Password = input("Nhập mật khẩu: ").strip()
-            ConfirmPassword = input("Nhập lại mật khẩu: ").strip()
-            if Password != ConfirmPassword:
-                print("Hai mật khẩu không trùng khớp. Vui lòng nhập lại.\n")
-            elif not Password:
-                print("Mật khẩu không được để trống.\n")
-            else:
-                break
-
-        # Thêm vào CSDL
-        query = "INSERT INTO UserRecord (UserID, UserName, Passwd) VALUES (%s, %s, %s)"
-        try:
-            mycursor.execute(query, (UserID, UserName, Password))
-            mydb.commit()
-            print("Thêm người dùng thành công!\n")
-        except pymysql.MySQLError as err:
-            print(f"Lỗi CSDL: {err}")
-            continue
-
-        ch = input("Bạn có muốn thêm người dùng khác không? [Yes/No]: ").strip().lower()
-        if ch != "yes":
-            break
-
-#--------------------------------------------------------------------------------------------------------------------------------             
-# xóa người dùng 
-def deleteUser():
-    while True:
-        print()
-        UserID = input("Nhập mã người dùng cần xóa: ").strip()
-        if not UserID:
-            print("Mã người dùng không được để trống.")
-            continue
-
-        mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
-        if not mycursor.fetchone():
-            print("Người dùng không tồn tại.")
-        else:
-            mycursor.execute("DELETE FROM UserRecord WHERE UserID = %s", (UserID,))
-            mydb.commit()
-            print("Đã xóa người dùng thành công!")
-
-        ch = input("Bạn có muốn xóa người dùng khác không? [Yes/No]: ").strip().lower()
-        if ch != "yes":
-            break
-
-#--------------------------------------------------------------------------------------------------------------------------------  
-# tìm kiếm người dùng        
-def searchUser():
-    while True:
-        print()
-        UserID = input("Nhập mã người dùng cần tìm: ").strip()
-        if not UserID:
-            print("Vui lòng nhập mã người dùng.")
-            continue
-
-        mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord WHERE UserID = %s", (UserID,))
-        record = mycursor.fetchone()
-        if record:
-            print("****************************** Kết quả tìm kiếm ******************************")
-            print("\t   Mã người dùng: ", record[0])
-            print("\t     Họ và tên: ", record[1])
-            print("\t       Mật khẩu: ", record[2])
+    def displayUser(self):
+        print("\nDanh sách người dùng:\n")
+        self.mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord")
+        records = self.mycursor.fetchall()
+        for idx, row in enumerate(records, 1):
+            print(f"********** Người dùng số {idx} **********")
+            print("Mã người dùng:", row[0])
+            print("Tên người dùng:", row[1])
+            print("Mật khẩu:", row[2])
             print()
-        else:
-            print("Không tìm thấy người dùng.")
+        input("Nhấn Enter để quay lại...")
 
-        ch = input("Bạn có muốn tìm thêm người dùng khác không? [Yes/No]: ").strip().lower()
-        if ch != "yes":
-            break
-
-#--------------------------------------------------------------------------------------------------------------------------------    
-# cập nhật người dùng  
-def updateUser():
-    while True:
-        print()
-        UserID = input("Nhập mã người dùng cần cập nhật: ").strip()
-        if not UserID:
-            print("Mã người dùng không được để trống.")
-            continue
-
-        mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
-        if not mycursor.fetchone():
-            print("Người dùng không tồn tại.")
-            continue
-
-        UserName = input("Nhập tên người dùng mới: ").strip()
+    def insertUser(self):
         while True:
-            Password = input("Nhập mật khẩu mới: ").strip()
-            ConfirmPassword = input("Nhập lại mật khẩu mới: ").strip()
-            if Password != ConfirmPassword:
-                print("Hai mật khẩu không trùng khớp. Vui lòng nhập lại.\n")
-            else:
+            print()
+            UserID = input("Nhập mã người dùng (ví dụ: FnB1234): ").strip()
+            UserName = input("Nhập tên người dùng: ").strip()
+
+            self.mycursor.execute("SELECT UserID FROM UserRecord WHERE UserID = %s", (UserID,))
+            if self.mycursor.fetchone():
+                print("❌ Mã người dùng đã tồn tại.")
+                continue
+
+            while True:
+                Password = input("Nhập mật khẩu: ").strip()
+                Confirm = input("Nhập lại mật khẩu: ").strip()
+                if Password != Confirm:
+                    print("❌ Mật khẩu không khớp.")
+                else:
+                    break
+
+            try:
+                self.mycursor.execute(
+                    "INSERT INTO UserRecord (UserID, UserName, Passwd) VALUES (%s, %s, %s)",
+                    (UserID, UserName, Password)
+                )
+                self.mydb.commit()
+                print("✅ Đã thêm người dùng.")
+            except pymysql.MySQLError as e:
+                print(f"Lỗi khi thêm người dùng: {e}")
+
+            if input("Thêm người dùng khác? [yes/no]: ").strip().lower() != "yes":
                 break
 
-        query = "UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s"
-        mycursor.execute(query, (UserName, Password, UserID))
-        mydb.commit()
-        print("Cập nhật thành công!")
+    def deleteUser(self):
+        while True:
+            UserID = input("\nNhập mã người dùng cần xóa: ").strip()
+            self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
+            if not self.mycursor.fetchone():
+                print("❌ Người dùng không tồn tại.")
+            else:
+                self.mycursor.execute("DELETE FROM UserRecord WHERE UserID = %s", (UserID,))
+                self.mydb.commit()
+                print("✅ Đã xóa người dùng.")
 
-        ch = input("Bạn có muốn cập nhật người dùng khác không? [Yes/No]: ").strip().lower()
-        if ch != "yes":
-            break
-    return 
+            if input("Xóa người dùng khác? [yes/no]: ").strip().lower() != "yes":
+                break
+
+    def searchUser(self):
+        while True:
+            UserID = input("\nNhập mã người dùng cần tìm: ").strip()
+            self.mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord WHERE UserID = %s", (UserID,))
+            record = self.mycursor.fetchone()
+            if record:
+                print("\n*** Kết quả tìm kiếm ***")
+                print("Mã người dùng:", record[0])
+                print("Tên người dùng:", record[1])
+                print("Mật khẩu:", record[2])
+            else:
+                print("❌ Không tìm thấy người dùng.")
+
+            if input("Tìm người dùng khác? [yes/no]: ").strip().lower() != "yes":
+                break
+
+    def updateUser(self):
+        while True:
+            UserID = input("\nNhập mã người dùng cần cập nhật: ").strip()
+            self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (UserID,))
+            if not self.mycursor.fetchone():
+                print("❌ Người dùng không tồn tại.")
+                continue
+
+            UserName = input("Nhập tên mới: ").strip()
+            while True:
+                Password = input("Nhập mật khẩu mới: ").strip()
+                Confirm = input("Nhập lại mật khẩu: ").strip()
+                if Password != Confirm:
+                    print("❌ Mật khẩu không khớp.")
+                else:
+                    break
+
+            self.mycursor.execute(
+                "UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s",
+                (UserName, Password, UserID)
+            )
+            self.mydb.commit()
+            print("✅ Cập nhật thành công.")
+
+            if input("Cập nhật người dùng khác? [yes/no]: ").strip().lower() != "yes":
+                break

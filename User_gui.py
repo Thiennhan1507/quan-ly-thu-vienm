@@ -10,18 +10,14 @@ class UserApp:
     def displayUser(self):
         win = tk.Toplevel()
         win.title("Hiển thị danh sách người dùng")
-        win.geometry("650x400")
+        win.geometry("500x400")
 
-        tree = ttk.Treeview(win, columns=("UserID", "UserName", "Passwd", "BookName", "BookID"), show="headings")
-        for col, name in zip(tree["columns"], ["Mã người dùng", "Tên người dùng", "Mật khẩu", "Sách đang mượn", "Mã sách"]):
+        tree = ttk.Treeview(win, columns=("UserID", "UserName", "Passwd"), show="headings")
+        for col, name in zip(tree["columns"], ["Mã người dùng", "Tên người dùng", "Mật khẩu"]):
             tree.heading(col, text=name)
         tree.pack(fill="both", expand=True)
 
-        self.mycursor.execute("""
-            SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Passwd,
-                   BookRecord.BookName, BookRecord.BookID
-            FROM UserRecord LEFT JOIN BookRecord ON UserRecord.BookID = BookRecord.BookID
-        """)
+        self.mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord")
         for row in self.mycursor.fetchall():
             tree.insert("", "end", values=row)
 
@@ -70,8 +66,8 @@ class UserApp:
                 return
 
             self.mycursor.execute(
-                "INSERT INTO UserRecord (UserID, UserName, Passwd, BookID) VALUES (%s, %s, %s, %s)",
-                (user_id, user_name, password, None)
+                "INSERT INTO UserRecord (UserID, UserName, Passwd) VALUES (%s, %s, %s)",
+                (user_id, user_name, password)
             )
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Đã thêm người dùng thành công.")
@@ -93,14 +89,20 @@ class UserApp:
 
         def delete_user():
             user_id = user_id_entry.get().strip()
-            if user_id:
-                self.mycursor.execute("DELETE FROM UserRecord WHERE UserID=%s", (user_id,))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Đã xóa người dùng thành công.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn xóa người dùng khác không?"):
-                    win.destroy()
-            else:
+            if not user_id:
                 messagebox.showerror("Lỗi", "Vui lòng nhập mã người dùng.")
+                return
+
+            self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (user_id,))
+            if not self.mycursor.fetchone():
+                messagebox.showerror("Lỗi", "Người dùng không tồn tại.")
+                return
+
+            self.mycursor.execute("DELETE FROM UserRecord WHERE UserID=%s", (user_id,))
+            self.mydb.commit()
+            messagebox.showinfo("Thành công", "Đã xóa người dùng thành công.")
+            if not messagebox.askyesno("Tiếp tục", "Bạn có muốn xóa người dùng khác không?"):
+                win.destroy()
 
         tk.Button(win, text="Xóa", command=delete_user).pack(pady=10)
 
@@ -117,31 +119,24 @@ class UserApp:
 
         def search_user():
             user_id = user_id_entry.get().strip()
-            if user_id:
-                self.mycursor.execute("""
-                    SELECT UserRecord.UserID, UserRecord.UserName, UserRecord.Passwd,
-                           BookRecord.BookName, UserRecord.BookID
-                    FROM UserRecord LEFT JOIN BookRecord ON UserRecord.BookID = BookRecord.BookID
-                    WHERE UserRecord.UserID = %s
-                """, (user_id,))
-                records = self.mycursor.fetchall()
-                if records:
-                    result_win = tk.Toplevel()
-                    result_win.title("Kết quả tìm kiếm")
-                    result_win.geometry("400x200")
-                    for row in records:
-                        tk.Label(result_win, text=f"Mã người dùng: {row[0]}").pack()
-                        tk.Label(result_win, text=f"Tên người dùng: {row[1]}").pack()
-                        tk.Label(result_win, text=f"Mật khẩu: {row[2]}").pack()
-                        tk.Label(result_win, text=f"Sách đang mượn: {row[3]}").pack()
-                        tk.Label(result_win, text=f"Mã sách: {row[4]}").pack()
-                    tk.Button(result_win, text="Đóng", command=result_win.destroy).pack(pady=10)
-                else:
-                    messagebox.showinfo("Kết quả", "Không tìm thấy người dùng.")
-                if not messagebox.askyesno("Tiếp tục", "Bạn có muốn tìm người dùng khác không?"):
-                    win.destroy()
-            else:
+            if not user_id:
                 messagebox.showerror("Lỗi", "Vui lòng nhập mã người dùng.")
+                return
+
+            self.mycursor.execute("SELECT UserID, UserName, Passwd FROM UserRecord WHERE UserID = %s", (user_id,))
+            record = self.mycursor.fetchone()
+            if record:
+                result_win = tk.Toplevel()
+                result_win.title("Kết quả tìm kiếm")
+                result_win.geometry("400x150")
+                tk.Label(result_win, text=f"Mã người dùng: {record[0]}").pack()
+                tk.Label(result_win, text=f"Tên người dùng: {record[1]}").pack()
+                tk.Label(result_win, text=f"Mật khẩu: {record[2]}").pack()
+                tk.Button(result_win, text="Đóng", command=result_win.destroy).pack(pady=10)
+            else:
+                messagebox.showinfo("Kết quả", "Không tìm thấy người dùng.")
+            if not messagebox.askyesno("Tiếp tục", "Bạn có muốn tìm người dùng khác không?"):
+                win.destroy()
 
         tk.Button(win, text="Tìm kiếm", command=search_user).pack(pady=10)
 
@@ -181,8 +176,13 @@ class UserApp:
                 messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
                 return
 
-            query = "UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s"
-            self.mycursor.execute(query, (user_name, password, user_id))
+            self.mycursor.execute("SELECT * FROM UserRecord WHERE UserID = %s", (user_id,))
+            if not self.mycursor.fetchone():
+                messagebox.showerror("Lỗi", "Người dùng không tồn tại.")
+                return
+
+            self.mycursor.execute("UPDATE UserRecord SET UserName = %s, Passwd = %s WHERE UserID = %s",
+                                  (user_name, password, user_id))
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Đã cập nhật thông tin người dùng.")
             if not messagebox.askyesno("Tiếp tục", "Bạn có muốn cập nhật người dùng khác không?"):

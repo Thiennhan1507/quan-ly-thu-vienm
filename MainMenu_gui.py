@@ -48,7 +48,7 @@ class MainMenuApp:
     def __init__(self, root, role):
         self.root = root
         self.root.title("Thư viện - Giao diện chính")
-        self.root.geometry("400x400")  # Tăng chiều cao để chứa thêm nút thống kê
+        self.root.geometry("400x500")  # Tăng chiều cao để chứa thêm nút thống kê
         self.role = role
 
         if self.role == "Admin":
@@ -94,7 +94,7 @@ def Usermenu():
     app = MainMenuApp(root, "User")
     root.mainloop()
 
-"""
+
 # Tùy chọn muốn chạy mặc định là admin hay user
 if __name__ == "__main__":
-    Adminmenu()  # Hoặc Usermenu() nếu muốn mở mặc định giao diện người dùng """
+    Adminmenu()  # Hoặc Usermenu() nếu muốn mở mặc định giao diện người dùng 
