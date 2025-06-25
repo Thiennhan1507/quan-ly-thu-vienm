@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS UserRecord (
     Passwd VARCHAR(50) NOT NULL,
     Fullname VARCHAR(50) NOT NULL,
     BookID VARCHAR(10),
-    FOREIGN KEY (BookID) REFERENCES BookRecord(BookID) ON DELETE SET NULL ON UPDATE CASCADE -- thêm ràng buộc ON DELETE SET NULL trong khóa ngoại để tránh lỗi khi xóa sách
 );
 
 -- Tạo bảng AdminRecord
@@ -25,6 +24,14 @@ CREATE TABLE IF NOT EXISTS AdminRecord (
     AdminID VARCHAR(20) PRIMARY KEY,
     Passwd  VARCHAR(50)
 );
+
+-- Tài khoản cho admin 
+INSERT INTO AdminRecord
+VALUES  ("fnbtoinv", 123456789), 
+		("fnbdatpt", 123456789),
+        ("fnbduongnk",123456789),
+        ("fnbkhanhhq",123456789),
+        ("fnbnhannt",123456789);
 
 -- Tạo bảng Feedback
 CREATE TABLE IF NOT EXISTS Feedback (

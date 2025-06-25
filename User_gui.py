@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-import pymysql
 from db_config import get_connection
 
 class UserApp:

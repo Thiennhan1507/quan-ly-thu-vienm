@@ -3,7 +3,7 @@ from tkinter import messagebox, ttk
 import Operations_gui as Operations
 from Book_gui import BookApp
 from library import get_top_borrowed_books
-
+from library import get_unreturned_books 
 # Hàm thống kê sách mượn nhiều nhất
 def show_top_borrowed_books():
     data = get_top_borrowed_books()
@@ -22,6 +22,26 @@ def show_top_borrowed_books():
 
     tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
 
+# danh sách chưa trả hoặc quá hạn 
+def show_unreturned_books():
+    data = get_unreturned_books()
+
+    win = tk.Toplevel()
+    win.title("Danh sách sách chưa trả / quá hạn")
+    win.geometry("600x300")
+
+    tree = ttk.Treeview(win, columns=("UserID", "UserName", "BookName", "DueDate"), show="headings")
+    tree.heading("UserID", text="Mã người dùng")
+    tree.heading("UserName", text="Tên người dùng")
+    tree.heading("BookName", text="Tên sách")
+    tree.heading("DueDate", text="Hạn trả")
+
+    tree.pack(fill="both", expand=True)
+
+    for row in data:
+        tree.insert("", "end", values=row)
+
+    tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
 
 # Lớp giao diện chính
 class MainMenuApp:
@@ -43,9 +63,8 @@ class MainMenuApp:
         tk.Button(self.root, text="Quản lý người dùng", command=Operations.UserManagement).pack(pady=10)
         tk.Button(self.root, text="Quản lý quản trị viên", command=Operations.AdminManagement).pack(pady=10)
         tk.Button(self.root, text="Bảng phản hồi", command=Operations.FeedbackTable).pack(pady=10)
-
-        # Nút thống kê sách mượn nhiều nhất
         tk.Button(self.root, text="Thống kê sách mượn nhiều nhất", command=show_top_borrowed_books).pack(pady=10)
+        tk.Button(self.root, text="Sách chưa trả / quá hạn", command=show_unreturned_books).pack(pady=10)
 
         tk.Button(self.root, text="Đăng xuất", command=self.dang_xuat).pack(pady=10)
 
@@ -54,7 +73,6 @@ class MainMenuApp:
 
         tk.Button(self.root, text="Trung tâm sách", command=Operations.BookCentre).pack(pady=10)
         tk.Button(self.root, text="Góp ý và đánh giá", command=Operations.Feedback).pack(pady=10)
-
         tk.Button(self.root, text="Thống kê sách mượn nhiều nhất", command=show_top_borrowed_books).pack(pady=10)
 
         tk.Button(self.root, text="Đăng xuất", command=self.dang_xuat).pack(pady=10)
@@ -76,7 +94,7 @@ def Usermenu():
     app = MainMenuApp(root, "User")
     root.mainloop()
 
-
+"""
 # Tùy chọn muốn chạy mặc định là admin hay user
 if __name__ == "__main__":
-    Adminmenu()  # Hoặc Usermenu() nếu muốn mở mặc định giao diện người dùng
+    Adminmenu()  # Hoặc Usermenu() nếu muốn mở mặc định giao diện người dùng """

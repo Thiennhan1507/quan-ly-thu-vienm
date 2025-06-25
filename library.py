@@ -4,7 +4,7 @@ from db_config import get_connection
 conn = get_connection()
 cursor = conn.cursor()
 
-
+# Kiểm tra số lượng sách còn để mượn
 def check_book_availability(book_id):
     """
     Kiểm tra sách còn số lượng để mượn không.
@@ -14,7 +14,7 @@ def check_book_availability(book_id):
     result = cursor.fetchone()
     return result and result[0] > 0
 
-
+# Thêm giao dịch mượn sách vào transactions, giảm số lượng sách
 def borrow_book(user_id, book_id):
     """
     Hàm xử lý mượn sách:
@@ -48,7 +48,7 @@ def borrow_book(user_id, book_id):
     conn.commit()
     print(f"Mượn sách thành công: {book[0]} (Hạn trả: {due_date})")
 
-
+# Trả sách, cập nhật trạng thái và tăng số lượng sách
 def return_book(transaction_id):
     """
     Hàm xử lý trả sách:
@@ -90,7 +90,7 @@ def return_book(transaction_id):
 
     print(f"Trả sách thành công. Trạng thái: {status}")
 
-
+# Thống kê top sách được mượn nhiều nhất
 def get_top_borrowed_books(limit=5):
     """
     Thống kê các sách được mượn nhiều nhất, mặc định lấy top 5.
@@ -113,6 +113,16 @@ def get_top_borrowed_books(limit=5):
     for title, count in results:
         print(f"- {title} ({count} lần)")
 
+# Lấy danh sách sách đang mượn hoặc quá hạn chưa trả
+def get_unreturned_books():
+    cursor.execute("""
+        SELECT u.UserID, u.UserName, b.BookName, t.due_date
+        FROM transactions t
+        JOIN UserRecord u ON t.user_id = u.UserID
+        JOIN BookRecord b ON t.book_id = b.BookID
+        WHERE t.status IN ('borrowed', 'overdue') AND t.return_date IS NULL
+    """)
+    return cursor.fetchall()
 
 def main_menu():
     """
@@ -147,6 +157,3 @@ def main_menu():
         else:
             print("Lựa chọn không hợp lệ. Vui lòng thử lại.")
 
-# Chạy chương trình  
-if __name__ == "__main__":
-    main_menu()
