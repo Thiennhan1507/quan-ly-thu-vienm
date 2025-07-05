@@ -1,1 +1,5 @@
 myvenv/
+__pycache__/
+LibrarySystem/__pycache__/
+venlibrary/ 
+myvenv/ 
