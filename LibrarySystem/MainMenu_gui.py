@@ -45,6 +45,55 @@ def show_unreturned_books():
 
     tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
 
+def open_update_account_window():
+    update_win = tk.Toplevel()
+    update_win.title("Cập nhật thông tin tài khoản")
+    update_win.geometry("300x300")
+
+    tk.Label(update_win, text="Mã người dùng:").pack()
+    uid_entry = tk.Entry(update_win)
+    uid_entry.pack()
+
+    tk.Label(update_win, text="Tên mới:").pack()
+    name_entry = tk.Entry(update_win)
+    name_entry.pack()
+
+    tk.Label(update_win, text="Mật khẩu mới:").pack()
+    pw_entry = tk.Entry(update_win, show="*")
+    pw_entry.pack()
+
+    tk.Label(update_win, text="Nhập lại mật khẩu mới:").pack()
+    confirm_entry = tk.Entry(update_win, show="*")
+    confirm_entry.pack()
+
+    def update_account():
+        uid = uid_entry.get().strip()
+        name = name_entry.get().strip()
+        pw = pw_entry.get().strip()
+        confirm = confirm_entry.get().strip()
+
+        if not all([uid, name, pw, confirm]):
+            messagebox.showerror("Lỗi", "Vui lòng nhập đầy đủ thông tin.")
+            return
+        if pw != confirm:
+            messagebox.showerror("Lỗi", "Hai mật khẩu không khớp.")
+            return
+
+        conn = get_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM UserRecord WHERE UserID = %s", (uid,))
+        if not cur.fetchone():
+            messagebox.showerror("Lỗi", "Mã người dùng không tồn tại.")
+            return
+
+        cur.execute("UPDATE UserRecord SET UserName=%s, Passwd=%s, Fullname=%s WHERE UserID=%s",
+                    (name, pw, name, uid))
+        conn.commit()
+        messagebox.showinfo("Thành công", "Đã cập nhật thông tin tài khoản.")
+        update_win.destroy()
+
+    tk.Button(update_win, text="Cập nhật", command=update_account).pack(pady=10)
+
 # Giao diện chính
 class MainMenuApp:
     def __init__(self, root, role):
@@ -73,6 +122,8 @@ class MainMenuApp:
         tk.Button(self.root, text="Trung tâm sách", command=Operations.BookCentre).pack(pady=10)
         tk.Button(self.root, text="Góp ý và đánh giá", command=Operations.Feedback).pack(pady=10)
         tk.Button(self.root, text="Thống kê sách mượn nhiều nhất", command=show_top_borrowed_books).pack(pady=10)
+        tk.Button(self.root, text="Cập nhật thông tin tài khoản", command=open_update_account_window).pack(pady=10)
+
         tk.Button(self.root, text="Đăng xuất", command=self.dang_xuat).pack(pady=10)
 
     def dang_xuat(self):
