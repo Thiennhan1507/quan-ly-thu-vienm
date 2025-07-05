@@ -91,27 +91,22 @@ def return_book(transaction_id):
     print(f"Trả sách thành công. Trạng thái: {status}")
 
 # Thống kê top sách được mượn nhiều nhất
-def get_top_borrowed_books(limit=5):
-    """
-    Thống kê các sách được mượn nhiều nhất, mặc định lấy top 5.
-    """
+def get_top_borrowed_books():
+    conn = get_connection()
+    cursor = conn.cursor()
+
     cursor.execute("""
-        SELECT b.BookName, COUNT(*) AS times_borrowed
+        SELECT b.BookName, COUNT(*) AS TimesBorrowed
         FROM transactions t
-        JOIN BookRecord b ON t.BookID = b.BookID
-        GROUP BY b.BookID
-        ORDER BY times_borrowed DESC
-        LIMIT %s
-    """, (limit,))
+        JOIN BookRecord b ON t.book_id = b.BookID
+        GROUP BY t.book_id
+        ORDER BY TimesBorrowed DESC
+        LIMIT 10;
+    """)
 
     results = cursor.fetchall()
-    if not results:
-        print("Không có dữ liệu mượn sách.")
-        return
+    return results
 
-    print("Sách được mượn nhiều nhất:")
-    for title, count in results:
-        print(f"- {title} ({count} lần)")
 
 # Lấy danh sách sách đang mượn hoặc quá hạn chưa trả
 def get_unreturned_books():

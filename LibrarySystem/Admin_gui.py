@@ -27,7 +27,7 @@ class AdminApp:
     def them_admin(self):
         win = tk.Toplevel()
         win.title("Thêm Quản trị viên")
-        win.geometry("300x200")
+        win.geometry("300x300")
 
         tk.Label(win, text="Thêm quản trị viên", font=("Arial", 14)).pack(pady=10)
 
@@ -130,7 +130,7 @@ class AdminApp:
     def cap_nhat_admin(self):
         win = tk.Toplevel()
         win.title("Cập nhật Quản trị viên")
-        win.geometry("300x200")
+        win.geometry("300x300")
 
         tk.Label(win, text="Cập nhật quản trị viên", font=("Arial", 14)).pack(pady=10)
 

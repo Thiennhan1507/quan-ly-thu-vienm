@@ -7,6 +7,7 @@ from db_config import get_connection
 # Thống kê sách mượn nhiều nhất
 def show_top_borrowed_books():
     data = get_top_borrowed_books()
+
     win = tk.Toplevel()
     win.title("Thống kê sách mượn nhiều nhất")
     win.geometry("500x300")
@@ -16,17 +17,21 @@ def show_top_borrowed_books():
     tree.heading("TimesBorrowed", text="Số lần mượn")
     tree.pack(fill="both", expand=True)
 
-    for row in data:
-        tree.insert("", "end", values=row)
+    if data:
+        for row in data:
+            tree.insert("", "end", values=row)
+    else:
+        messagebox.showinfo("Thông báo", "Chưa có sách nào được mượn.")
 
     tk.Button(win, text="Đóng", command=win.destroy).pack(pady=10)
+
 
 # Danh sách chưa trả / quá hạn
 def show_unreturned_books():
     data = get_unreturned_books()
     win = tk.Toplevel()
     win.title("Danh sách sách chưa trả / quá hạn")
-    win.geometry("600x300")
+    win.geometry("1400x1200")
 
     tree = ttk.Treeview(win, columns=("UserID", "UserName", "BookName", "DueDate"), show="headings")
     tree.heading("UserID", text="Mã người dùng")
@@ -189,7 +194,7 @@ def Usermenu():
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Hệ thống Quản lý Thư viện")
-    root.geometry("300x200")
+    root.geometry("300x300")
 
     tk.Label(root, text="Chào mừng đến với Thư viện", font=("Arial", 14)).pack(pady=20)
     tk.Button(root, text="Đăng nhập", command=open_login_window).pack(pady=10)

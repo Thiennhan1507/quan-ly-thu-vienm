@@ -1,15 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-import Book_gui as Book  
-import User_gui as User   
-import Admin_gui as Admin  
+import Book_gui as Book
+import User_gui as User
+import Admin_gui as Admin
 from db_config import get_connection
-import library 
+
 class OperationsApp:
     def __init__(self, root: tk.Tk, menu_type: str):
         self.root = root
         self.root.title(f"Hệ thống Thư viện - {menu_type}")
-        self.root.geometry("400x400")
+        self.root.geometry("400x450")
         self.menu_type = menu_type
 
         # Kết nối DB
@@ -21,7 +21,7 @@ class OperationsApp:
         self.user_app = User.UserApp()
         self.admin_app = Admin.AdminApp()
 
-        # Điều hướng theo loại menu
+        # Điều hướng
         if menu_type == "Quản lý sách":
             self.book_management()
         elif menu_type == "Quản lý người dùng":
@@ -37,57 +37,52 @@ class OperationsApp:
 
     def book_management(self):
         tk.Label(self.root, text="Quản lý Sách", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Thêm sách", command=self.book_app.insertBook).pack(pady=10)
-        tk.Button(self.root, text="Hiển thị sách", command=self.book_app.displayBook).pack(pady=10)
-        tk.Button(self.root, text="Tìm kiếm sách", command=self.book_app.searchBook).pack(pady=10)
-        tk.Button(self.root, text="Xóa sách", command=self.book_app.deleteBook).pack(pady=10)
-        tk.Button(self.root, text="Cập nhật sách", command=self.book_app.updateBook).pack(pady=10)
+        tk.Button(self.root, text="Thêm sách", command=self.book_app.insertBook).pack(pady=5)
+        tk.Button(self.root, text="Hiển thị sách", command=self.book_app.displayBook).pack(pady=5)
+        tk.Button(self.root, text="Tìm kiếm sách", command=self.book_app.searchBook).pack(pady=5)
+        tk.Button(self.root, text="Xóa sách", command=self.book_app.deleteBook).pack(pady=5)
+        tk.Button(self.root, text="Cập nhật sách", command=self.book_app.updateBook).pack(pady=5)
         tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def user_management(self):
         tk.Label(self.root, text="Quản lý Người dùng", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Thêm người dùng", command=self.user_app.insertUser).pack(pady=10)
-        tk.Button(self.root, text="Hiển thị người dùng", command=self.user_app.displayUser).pack(pady=10)
-        tk.Button(self.root, text="Tìm kiếm người dùng", command=self.user_app.searchUser).pack(pady=10)
-        tk.Button(self.root, text="Xóa người dùng", command=self.user_app.deleteUser).pack(pady=10)
-        tk.Button(self.root, text="Cập nhật người dùng", command=self.user_app.updateUser).pack(pady=10)
+        tk.Button(self.root, text="Thêm người dùng", command=self.user_app.insertUser).pack(pady=5)
+        tk.Button(self.root, text="Hiển thị người dùng", command=self.user_app.displayUser).pack(pady=5)
+        tk.Button(self.root, text="Tìm kiếm người dùng", command=self.user_app.searchUser).pack(pady=5)
+        tk.Button(self.root, text="Xóa người dùng", command=self.user_app.deleteUser).pack(pady=5)
+        tk.Button(self.root, text="Cập nhật người dùng", command=self.user_app.updateUser).pack(pady=5)
         tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def admin_management(self):
         tk.Label(self.root, text="Quản lý Quản trị viên", font=("Arial", 16)).pack(pady=20)
-        
-        tk.Button(self.root, text="Thêm quản trị viên", command=self.admin_app.them_admin).pack(pady=10)
-        tk.Button(self.root, text="Hiển thị quản trị viên", command=self.admin_app.hien_thi_admin).pack(pady=10)
-        tk.Button(self.root, text="Tìm kiếm quản trị viên", command=self.admin_app.tim_kiem_admin).pack(pady=10)
-        tk.Button(self.root, text="Xóa quản trị viên", command=self.admin_app.xoa_admin).pack(pady=10)
-        tk.Button(self.root, text="Cập nhật quản trị viên", command=self.admin_app.cap_nhat_admin).pack(pady=10)
-
+        tk.Button(self.root, text="Thêm quản trị viên", command=self.admin_app.them_admin).pack(pady=5)
+        tk.Button(self.root, text="Hiển thị quản trị viên", command=self.admin_app.hien_thi_admin).pack(pady=5)
+        tk.Button(self.root, text="Tìm kiếm quản trị viên", command=self.admin_app.tim_kiem_admin).pack(pady=5)
+        tk.Button(self.root, text="Xóa quản trị viên", command=self.admin_app.xoa_admin).pack(pady=5)
+        tk.Button(self.root, text="Cập nhật quản trị viên", command=self.admin_app.cap_nhat_admin).pack(pady=5)
+        tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def feedback_table(self):
         tk.Label(self.root, text="Bảng Góp ý và Đánh giá", font=("Arial", 16)).pack(pady=20)
-        
+
         tree = ttk.Treeview(self.root, columns=("Feedback", "Rating"), show="headings")
         tree.heading("Feedback", text="Nội dung góp ý")
         tree.heading("Rating", text="Đánh giá")
         tree.pack(fill="both", expand=True)
 
-        self.mycursor.execute("SELECT * FROM Feedback")
-        records = self.mycursor.fetchall()
-        for row in records:
+        self.mycursor.execute("SELECT Feedback, Rating FROM Feedback")
+        for row in self.mycursor.fetchall():
             tree.insert("", "end", values=row)
 
         tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def book_centre(self):
         tk.Label(self.root, text="Trung tâm Sách", font=("Arial", 16)).pack(pady=20)
-        
         self.book_app.show_borrow_return_ui()
-        tk.Button(self.root, text="Danh sách tất cả sách", command=self.book_app.displayBook).pack(pady=10)
 
-        tk.Button(self.root, text="Hiển thị sách đang mượn", command=self.book_app.display_borrowed_books).pack(pady=10)
-
+        tk.Button(self.root, text="Danh sách tất cả sách", command=self.book_app.displayBook).pack(pady=5)
+        tk.Button(self.root, text="Tìm kiếm sách", command=self.book_app.searchBook).pack(pady=5)
+        tk.Button(self.root, text="Hiển thị sách đang mượn", command=self.book_app.display_borrowed_books).pack(pady=5)
         tk.Button(self.root, text="Quay lại menu chính", command=self.root.destroy).pack(pady=10)
 
     def feedback(self):
@@ -96,7 +91,7 @@ class OperationsApp:
         feedback_win.geometry("400x300")
 
         tk.Label(feedback_win, text="Đánh giá và Góp ý", font=("Arial", 14)).pack(pady=10)
-        
+
         tk.Label(feedback_win, text="Nội dung góp ý:").pack()
         feedback_entry = tk.Text(feedback_win, height=5, width=30)
         feedback_entry.pack()
@@ -107,19 +102,25 @@ class OperationsApp:
 
         def submit_feedback():
             feedback = feedback_entry.get("1.0", tk.END).strip()
-            rating = rating_entry.get()
-            if feedback and rating:
-                query = "INSERT INTO Feedback (Feedback, Rating) VALUES (%s, %s)"
-                self.mycursor.execute(query, (feedback, rating))
-                self.mydb.commit()
-                messagebox.showinfo("Thành công", "Cảm ơn bạn đã góp ý!")
-                feedback_win.destroy()
-            else:
-                messagebox.showerror("Lỗi", "Vui lòng điền đầy đủ thông tin!")
+            rating = rating_entry.get().strip()
+            if not feedback or not rating:
+                messagebox.showerror("Lỗi", "Vui lòng nhập đầy đủ.")
+                return
+            try:
+                rating_int = int(rating)
+                if not (1 <= rating_int <= 10):
+                    raise ValueError
+            except ValueError:
+                messagebox.showerror("Lỗi", "Đánh giá phải là số từ 1 đến 10.")
+                return
+            self.mycursor.execute("INSERT INTO Feedback (Feedback, Rating) VALUES (%s, %s)", (feedback, rating_int))
+            self.mydb.commit()
+            messagebox.showinfo("Thành công", "Cảm ơn bạn đã góp ý!")
+            feedback_win.destroy()
 
         tk.Button(feedback_win, text="Gửi góp ý", command=submit_feedback).pack(pady=10)
 
-# ======= Hàm khởi động các màn =======
+# ======= Hàm khởi động =======
 def BookManagement():
     root = tk.Tk()
     OperationsApp(root, "Quản lý sách")

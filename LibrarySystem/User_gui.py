@@ -60,15 +60,16 @@ class UserApp:
                 messagebox.showerror("Lỗi", "Hai mật khẩu không trùng khớp.")
                 return
 
+            # Kiểm tra UserID tồn tại
             self.mycursor.execute("SELECT UserID FROM UserRecord WHERE UserID = %s", (user_id,))
             if self.mycursor.fetchone():
                 messagebox.showerror("Lỗi", "Mã người dùng đã tồn tại.")
                 return
-
+            
             self.mycursor.execute(
-                "INSERT INTO UserRecord (UserID, UserName, Passwd) VALUES (%s, %s, %s)",
-                (user_id, user_name, password)
-            )
+                "INSERT INTO UserRecord (UserID, UserName, Passwd, Fullname) VALUES (%s, %s, %s, %s)",
+                (user_id, user_name, password, user_name)  # user_name được dùng cho cả 2 trường
+    )
             self.mydb.commit()
             messagebox.showinfo("Thành công", "Đã thêm người dùng thành công.")
             if not messagebox.askyesno("Tiếp tục", "Bạn có muốn thêm người dùng khác không?"):
