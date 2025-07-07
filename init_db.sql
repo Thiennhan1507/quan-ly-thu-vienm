@@ -6,8 +6,9 @@ USE Library;
 CREATE TABLE IF NOT EXISTS BookRecord (
     BookID VARCHAR(10) PRIMARY KEY,
     BookName VARCHAR(50),
-    Author VARCHAR(30),
-    Publisher VARCHAR(30)
+    Author VARCHAR(50),
+    PublisherYear INT,
+    quantity INT DEFAULT 0 
 );
 
 -- Tạo bảng UserRecord
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     borrow_date DATE,
     due_date DATE,
     return_date DATE,
-    status ENUM('borrowed', 'returned', 'overdue'),
+    status ENUM('đang mượn', 'đã trả', 'quá hạn'),
     FOREIGN KEY (book_id) REFERENCES BookRecord(BookID) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES UserRecord(UserID) ON DELETE CASCADE
 );

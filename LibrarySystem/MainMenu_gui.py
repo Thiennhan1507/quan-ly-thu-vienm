@@ -33,7 +33,7 @@ def show_unreturned_books():
     win.title("Danh sách sách chưa trả / quá hạn")
     win.geometry("1400x1200")
 
-    tree = ttk.Treeview(win, columns=("UserID", "UserName", "BookName", "DueDate", "status"), show="headings")
+    tree = ttk.Treeview(win, columns=("UserID", "UserName", "BookName", "DueDate", "Status"), show="headings")
     tree.heading("UserID", text="Mã người dùng")
     tree.heading("UserName", text="Tên người dùng")
     tree.heading("BookName", text="Tên sách")
