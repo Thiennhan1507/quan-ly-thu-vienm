@@ -38,6 +38,7 @@ def show_unreturned_books():
     tree.heading("UserName", text="Tên người dùng")
     tree.heading("BookName", text="Tên sách")
     tree.heading("DueDate", text="Hạn trả")
+    tree.heading("Status", text="Trạng thái")
     tree.pack(fill="both", expand=True)
 
     for row in data:

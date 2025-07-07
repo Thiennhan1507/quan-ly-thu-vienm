@@ -110,12 +110,16 @@ def get_top_borrowed_books():
 
 # Lấy danh sách sách đang mượn hoặc quá hạn chưa trả
 def get_unreturned_books():
+    conn = get_connection()
+    cursor = conn.cursor()
+
     cursor.execute("""
-        SELECT u.UserID, u.UserName, b.BookName, t.due_date
+        SELECT u.UserID, u.UserName, b.BookName, t.due_date, t.status
         FROM transactions t
         JOIN UserRecord u ON t.user_id = u.UserID
         JOIN BookRecord b ON t.book_id = b.BookID
-        WHERE t.status IN ('borrowed', 'overdue') AND t.return_date IS NULL
+        WHERE t.status IN ('đang mượn', 'quá hạn')
+        ORDER BY t.due_date ASC
     """)
     return cursor.fetchall()
 
